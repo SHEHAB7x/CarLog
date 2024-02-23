@@ -22,19 +22,34 @@
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:text="@string/devices"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:padding="30dp"
+        android:textColor="@color/btn_color"
+        android:textSize="30sp"
+        android:padding="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerDevices"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        tools:listitem="@layout/item_device"
+        android:layout_marginBottom="50dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:indeterminateTint="@color/btn_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
