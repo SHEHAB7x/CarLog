@@ -67,15 +67,16 @@ class ConnectFragment : Fragment() {
             }
         }
 
-        viewModel.connectionStateLiveData.observe(viewLifecycleOwner){
-            when(it){
+        viewModel.connectionStateLiveData.observe(viewLifecycleOwner){ socket ->
+            when(socket){
                 is ResponseState.Success -> {
                     binding.loading.visibility = View.GONE
+                    Toast.makeText(requireContext(),"You're connected",Toast.LENGTH_SHORT).show()
                     Navigation.findNavController(binding.root).navigate(R.id.action_connectFragment_to_homeFragment)
                 }
                 is ResponseState.Error ->{
                     binding.loading.visibility = View.GONE
-                    Toast.makeText(requireContext(),it.message,Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),socket.message,Toast.LENGTH_SHORT).show()
                 }
                 ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
             }
@@ -120,5 +121,4 @@ class ConnectFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
-
 }

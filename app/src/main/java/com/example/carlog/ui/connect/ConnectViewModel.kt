@@ -30,10 +30,7 @@ class ConnectViewModel
         }
     }
 
-
     fun connectToDevice(bluetoothDevice: BluetoothDevice) {
-
-
         viewModelScope.launch {
             try {
                 _connectionStateLiveData.value = ResponseState.Loading
