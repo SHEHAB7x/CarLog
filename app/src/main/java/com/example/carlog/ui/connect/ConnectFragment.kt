@@ -1,10 +1,8 @@
 package com.example.carlog.ui.connect
 
 import android.Manifest
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -17,13 +15,16 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.navigation.Navigation
 import com.example.carlog.R
 import com.example.carlog.adapters.AdapterRecyclerDevices
 import com.example.carlog.databinding.FragmentConnectBinding
 import com.example.carlog.network.ResponseState
+import com.example.carlog.utils.App
+import com.example.carlog.utils.MyBluetoothManager
+import com.example.carlog.utils.MyBluetoothSocket
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ConnectFragment : Fragment() {
@@ -35,6 +36,7 @@ class ConnectFragment : Fragment() {
         val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothManager.adapter
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkBluetoothPermissions()
@@ -70,6 +72,7 @@ class ConnectFragment : Fragment() {
         viewModel.connectionStateLiveData.observe(viewLifecycleOwner){ socket ->
             when(socket){
                 is ResponseState.Success -> {
+                    (activity?.application as App).bluetoothSocket = socket.data
                     binding.loading.visibility = View.GONE
                     Toast.makeText(requireContext(),"You're connected",Toast.LENGTH_SHORT).show()
                     Navigation.findNavController(binding.root).navigate(R.id.action_connectFragment_to_homeFragment)
@@ -88,6 +91,10 @@ class ConnectFragment : Fragment() {
             override fun onItemClicked(bluetoothDevice: BluetoothDevice) {
                 viewModel.connectToDevice(bluetoothDevice)
             }
+        }
+
+        binding.textDevices.setOnClickListener{
+            Navigation.findNavController(binding.root).navigate(R.id.action_connectFragment_to_homeFragment)
         }
     }
 

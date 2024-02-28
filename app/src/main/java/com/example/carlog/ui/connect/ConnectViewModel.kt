@@ -38,8 +38,8 @@ class ConnectViewModel
                     repo.connectToDevice(bluetoothDevice)
                 }
                 _connectionStateLiveData.postValue(result)
-            }catch (e : Exception){
-                _connectionStateLiveData.postValue(e.localizedMessage?.let { ResponseState.Error(it)})
+            } catch (e: Exception) {
+                _connectionStateLiveData.postValue(e.localizedMessage?.let { ResponseState.Error(it) })
             }
 
         }

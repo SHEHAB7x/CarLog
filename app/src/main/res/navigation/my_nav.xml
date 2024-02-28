@@ -44,14 +44,25 @@
         android:id="@+id/homeFragment"
         android:name="com.example.carlog.ui.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/connectFragment"
         android:name="com.example.carlog.ui.connect.ConnectFragment"
         android:label="fragment_connect"
         tools:layout="@layout/fragment_connect" >
+
         <action
             android:id="@+id/action_connectFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment" >
+        </action>
     </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.carlog.ui.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
