@@ -1,6 +1,5 @@
 package com.example.carlog.ui.home
 
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,16 +19,39 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     private val _liveSpeed = MutableLiveData<ResponseState<Int>>()
     val liveSpeed: LiveData<ResponseState<Int>> get() = _liveSpeed
 
-    fun getSpeed(bluetoothSocket: BluetoothSocket){
+
+    private val _liveRPM = MutableLiveData<ResponseState<String>>()
+
+    val liveRPM : LiveData<ResponseState<String>> get() = _liveRPM
+
+    fun getSpeed(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO) {
-            while (isActive){
+            while (isActive) {
                 try {
                     _liveSpeed.postValue(repo.getSpeed(bluetoothSocket))
-                    delay(1000)
-                }catch (e : Exception){
-                    _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error(it) })
+                    delay(500)
+                } catch (e: Exception) {
+                    _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("viewModel s Exception: $it") })
                 }
+            }
+        }
+    }
 
+    fun getRPM(bluetoothSocket: BluetoothSocket) {
+        viewModelScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                try {
+                    when (val rpmResponse = repo.getRPM(bluetoothSocket)) {
+                        is ResponseState.Success -> {
+                            val rpm = rpmResponse.data
+                            _liveRPM.postValue(ResponseState.Success(rpm))
+                        }
+                        is ResponseState.Error -> _liveRPM.postValue(rpmResponse)
+                    }
+                    delay(1000)
+                } catch (e: Exception) {
+                    _liveRPM.postValue(e.localizedMessage?.let { ResponseState.Error("viewModel Exception: $it") })
+                }
             }
         }
     }

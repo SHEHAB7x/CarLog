@@ -16,15 +16,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.carlog.R
 import com.example.carlog.adapters.AdapterRecyclerDevices
 import com.example.carlog.databinding.FragmentConnectBinding
 import com.example.carlog.network.ResponseState
 import com.example.carlog.utils.App
-import com.example.carlog.utils.MyBluetoothManager
-import com.example.carlog.utils.MyBluetoothSocket
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class ConnectFragment : Fragment() {
@@ -53,35 +53,38 @@ class ConnectFragment : Fragment() {
     }
 
     private fun observers() {
-        viewModel.devices.observe(viewLifecycleOwner){
-            when(it){
-                is ResponseState.Success ->{
-                    Toast.makeText(requireContext(),"Success " + it.data.size.toString(),Toast.LENGTH_SHORT).show()
-                    binding.loading.visibility = View.GONE
-                    adapterRecyclerDevices.list = it.data
-                    binding.recyclerDevices.adapter = adapterRecyclerDevices
-                }
-                is ResponseState.Error -> {
-                    binding.loading.visibility = View.GONE
-                    Toast.makeText(requireContext(),it.message,Toast.LENGTH_SHORT).show()
-                }
-                ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
-            }
-        }
 
-        viewModel.connectionStateLiveData.observe(viewLifecycleOwner){ socket ->
-            when(socket){
-                is ResponseState.Success -> {
-                    (activity?.application as App).bluetoothSocket = socket.data
-                    binding.loading.visibility = View.GONE
-                    Toast.makeText(requireContext(),"You're connected",Toast.LENGTH_SHORT).show()
-                    Navigation.findNavController(binding.root).navigate(R.id.action_connectFragment_to_homeFragment)
+        viewModel.apply {
+            devices.observe(viewLifecycleOwner){
+                when(it){
+                    is ResponseState.Success ->{
+                        Toast.makeText(requireContext(),"Success " + it.data.size.toString(),Toast.LENGTH_SHORT).show()
+                        binding.loading.visibility = View.GONE
+                        adapterRecyclerDevices.list = it.data
+                        binding.recyclerDevices.adapter = adapterRecyclerDevices
+                    }
+                    is ResponseState.Error -> {
+                        binding.loading.visibility = View.GONE
+                        Toast.makeText(requireContext(),it.message,Toast.LENGTH_SHORT).show()
+                    }
+                    ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
                 }
-                is ResponseState.Error ->{
-                    binding.loading.visibility = View.GONE
-                    Toast.makeText(requireContext(),socket.message,Toast.LENGTH_SHORT).show()
+            }
+
+            connectionStateLiveData.observe(viewLifecycleOwner){ socket ->
+                when(socket){
+                    is ResponseState.Success -> {
+                        (activity?.application as App).bluetoothSocket = socket.data
+                        binding.loading.visibility = View.GONE
+                        Toast.makeText(requireContext(),"You're connected",Toast.LENGTH_SHORT).show()
+                        Navigation.findNavController(binding.root).navigate(R.id.action_connectFragment_to_homeFragment)
+                    }
+                    is ResponseState.Error ->{
+                        binding.loading.visibility = View.GONE
+                        Toast.makeText(requireContext(),socket.message,Toast.LENGTH_SHORT).show()
+                    }
+                    ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
                 }
-                ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
             }
         }
     }

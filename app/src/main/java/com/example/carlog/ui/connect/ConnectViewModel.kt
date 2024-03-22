@@ -41,7 +41,6 @@ class ConnectViewModel
             } catch (e: Exception) {
                 _connectionStateLiveData.postValue(e.localizedMessage?.let { ResponseState.Error(it) })
             }
-
         }
     }
 }

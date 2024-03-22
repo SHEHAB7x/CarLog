@@ -1,7 +1,6 @@
 package com.example.carlog.di
 
 import android.content.Context
-import com.example.carlog.utils.MyBluetoothManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,10 +12,5 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Provides
-    @Singleton
-    fun provideBluetoothManager(@ApplicationContext context: Context): MyBluetoothManager {
-        return MyBluetoothManager(context)
-    }
 
 }

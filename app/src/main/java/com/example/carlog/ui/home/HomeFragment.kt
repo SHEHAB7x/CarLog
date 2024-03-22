@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.example.carlog.R
@@ -14,16 +15,16 @@ import com.example.carlog.databinding.FragmentHomeBinding
 import com.example.carlog.network.ResponseState
 import com.example.carlog.ui.connect.ConnectViewModel
 import com.example.carlog.utils.App
-import com.example.carlog.utils.MyBluetoothManager
-import com.example.carlog.utils.MyBluetoothSocket
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
+
+    private val connectViewModel : ConnectViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,40 +36,86 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onClicks()
+        observers()
         initializeSocket()
     }
 
     private fun observers() {
+        connectViewModel.connectionStateLiveData.observe(viewLifecycleOwner){ socket ->
+            when(socket){
+                is ResponseState.Success -> {
+                    (activity?.application as App).bluetoothSocket = socket.data
+                    binding.loading.visibility = View.GONE
+                    Toast.makeText(requireContext(),"You're connected",Toast.LENGTH_SHORT).show()
+                }
+                is ResponseState.Error ->{
+                    binding.loading.visibility = View.GONE
+                    Toast.makeText(requireContext(),socket.message,Toast.LENGTH_SHORT).show()
+                }
+                ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
+            }
+        }
+
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
                     binding.speed.text = state.data.toString()
+                    binding.socketStatus.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
+                    binding.socketStatus.text = getString(R.string.success)
+                }
+                is ResponseState.Error -> {
+                    binding.socketStatus.visibility = View.VISIBLE
+                    binding.socketStatus.text = state.message
+                }
+                ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
+                else -> binding.loading.visibility = View.GONE
+            }
+        }
+
+        viewModel.liveRPM.observe(viewLifecycleOwner){ state ->
+            when (state) {
+                is ResponseState.Success -> {
+                    binding.RPM.text = state.data
+                    binding.socketStatus.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
+                    binding.socketStatus.text = getString(R.string.success)
+                }
+                is ResponseState.Error -> {
+                    binding.socketStatus.visibility = View.VISIBLE
+                    binding.RPM.text = state.message
                 }
 
-                is ResponseState.Error -> {
-                    binding.speed.text = state.message
-                }
                 ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
                 else -> binding.loading.visibility = View.GONE
             }
         }
     }
 
-    private fun initializeSocket(){
+    private fun initializeSocket() {
         val myApp = activity?.application as App
         val bluetoothSocket = myApp.bluetoothSocket
-
         if (bluetoothSocket != null) {
-            viewModel.getSpeed(bluetoothSocket)
-            observers()
-            onClicks()
+            Toast.makeText(requireContext(),"Socket is connected",Toast.LENGTH_SHORT).show()
+            binding.socketStatus.visibility = View.GONE
+            getData(bluetoothSocket)
         } else {
-            Navigation.findNavController(binding.root).navigate(R.id.action_homeFragment_to_profileFragment)
+            Toast.makeText(requireContext(),"Noo Socket",Toast.LENGTH_SHORT).show()
+            binding.socketStatus.visibility = View.VISIBLE
         }
     }
 
-    private fun onClicks() {
+    private fun getData(bluetoothSocket: BluetoothSocket?) {
+        viewModel.getSpeed(bluetoothSocket!!)
+        viewModel.getRPM(bluetoothSocket)
+    }
 
+    private fun onClicks() {
+        binding.btnProfile.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_profileFragment)
+        }
+        binding.btnMessage.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_chatsFragment)
+        }
     }
 
     override fun onDestroyView() {

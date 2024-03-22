@@ -6,4 +6,7 @@
     <string name="acceleration">Acceleration</string>
     <string name="deceleration">Deceleration</string>
     <string name="cornering">Cornering</string>
+    <string name="socket_is_null">Socket is Null!</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="success">Success</string>
 </resources>
