@@ -13,6 +13,7 @@ import androidx.navigation.Navigation
 import com.example.carlog.R
 import com.example.carlog.databinding.FragmentHomeBinding
 import com.example.carlog.network.ResponseState
+import com.example.carlog.obd.ObdDeviceConnection
 import com.example.carlog.ui.connect.ConnectViewModel
 import com.example.carlog.utils.App
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,22 +74,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        viewModel.liveRPM.observe(viewLifecycleOwner){ state ->
-            when (state) {
-                is ResponseState.Success -> {
-                    binding.RPM.text = state.data
-                    binding.socketStatus.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
-                    binding.socketStatus.text = getString(R.string.success)
-                }
-                is ResponseState.Error -> {
-                    binding.socketStatus.visibility = View.VISIBLE
-                    binding.RPM.text = state.message
-                }
-
-                ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
-                else -> binding.loading.visibility = View.GONE
-            }
-        }
     }
 
     private fun initializeSocket() {
@@ -106,7 +91,6 @@ class HomeFragment : Fragment() {
 
     private fun getData(bluetoothSocket: BluetoothSocket?) {
         viewModel.getSpeed(bluetoothSocket!!)
-        viewModel.getRPM(bluetoothSocket)
     }
 
     private fun onClicks() {
