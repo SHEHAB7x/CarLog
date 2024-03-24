@@ -13,7 +13,6 @@ import androidx.navigation.Navigation
 import com.example.carlog.R
 import com.example.carlog.databinding.FragmentHomeBinding
 import com.example.carlog.network.ResponseState
-import com.example.carlog.obd.ObdDeviceConnection
 import com.example.carlog.ui.connect.ConnectViewModel
 import com.example.carlog.utils.App
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,7 +60,8 @@ class HomeFragment : Fragment() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.speed.text = state.data.toString()
+                    binding.speed.text = state.data.value
+                    binding.rawData.text = state.data.unit
                     binding.socketStatus.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
                     binding.socketStatus.text = getString(R.string.success)
                 }

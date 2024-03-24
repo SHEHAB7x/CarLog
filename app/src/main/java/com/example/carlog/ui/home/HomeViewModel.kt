@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carlog.network.ResponseState
 import com.example.carlog.repo.Repo
+import com.github.eltonvs.obd.command.ObdResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -16,8 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
-    private val _liveSpeed = MutableLiveData<ResponseState<Int>>()
-    val liveSpeed: LiveData<ResponseState<Int>> get() = _liveSpeed
+    private val _liveSpeed = MutableLiveData<ResponseState<ObdResponse>>()
+    val liveSpeed: LiveData<ResponseState<ObdResponse>> get() = _liveSpeed
 
 
     fun getSpeed(bluetoothSocket: BluetoothSocket) {

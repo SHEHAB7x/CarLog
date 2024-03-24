@@ -3,11 +3,13 @@ package com.example.carlog.repo
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
-import com.example.carlog.network.ObdRawResponse
 import com.example.carlog.network.ResponseState
-import com.example.carlog.obd.ObdDeviceConnection
-import com.example.carlog.utils.App
 import com.example.carlog.utils.Const
+import com.github.eltonvs.obd.command.ObdResponse
+import com.github.eltonvs.obd.command.control.VINCommand
+import com.github.eltonvs.obd.command.engine.RPMCommand
+import com.github.eltonvs.obd.command.engine.SpeedCommand
+import com.github.eltonvs.obd.connection.ObdDeviceConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -20,7 +22,6 @@ import javax.inject.Inject
 class Repo
 @Inject constructor() : IRepo {
 
-    private var obdDeviceConnection : ObdDeviceConnection? = null
 
     override suspend fun getPairedDevices(bluetoothAdapter: BluetoothAdapter): ResponseState<List<BluetoothDevice>> {
         return run {
@@ -43,49 +44,20 @@ class Repo
         }
     }
 
-    override suspend fun getSpeed(bluetoothSocket: BluetoothSocket): ResponseState<Int> {
+    override suspend fun getSpeed(bluetoothSocket: BluetoothSocket): ResponseState<ObdResponse> {
         return withContext(Dispatchers.IO) {
             try {
                 val outputStream = bluetoothSocket.outputStream
-
                 val inputStream = bluetoothSocket.inputStream
 
-                obdDeviceConnection = ObdDeviceConnection(inputStream,outputStream)
+                val obdConnection = ObdDeviceConnection(inputStream, outputStream)
+                val response = obdConnection.run(SpeedCommand(), delayTime = 500L, maxRetries = 5)
 
-                sendCommand(outputStream, Const.SPEED)
-
-                val result = readResult(inputStream).toString()
-
-                parseSpeedResult(result)
+                ResponseState.Success(response)
             } catch (e: IOException) {
                 ResponseState.Error("Failed to get speed: ${e.localizedMessage}")
             }
         }
     }
 
-    private suspend fun sendCommand(outputStream: OutputStream, command: String) {
-        withContext(Dispatchers.IO) {
-            outputStream.write(command.toByteArray())
-            outputStream.flush()
-        }
-        delay(600)
-    }
-
-    private suspend fun readResult(inputStream: InputStream) {
-        withContext(Dispatchers.IO) {
-            val buffer = ByteArray(1024)
-            val bytesRead = inputStream.read(buffer)
-            String(buffer, 0, bytesRead)
-        }
-    }
-
-    private fun parseSpeedResult(result: String): ResponseState<Int> {
-        return try {
-            val speedInHex = result.trim()
-            val speed = speedInHex.toInt(16)
-            ResponseState.Success(speed)
-        } catch (e: NumberFormatException) {
-            ResponseState.Error("Failed to parse speed: ${e.localizedMessage}")
-        }
-    }
 }
