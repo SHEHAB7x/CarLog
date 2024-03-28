@@ -24,36 +24,11 @@ import javax.inject.Inject
 class Repo
 @Inject constructor() : IRepo {
 
-
-    override suspend fun getPairedDevices(bluetoothAdapter: BluetoothAdapter): ResponseState<List<BluetoothDevice>> {
-        return run {
-            val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter.bondedDevices
-            ResponseState.Success(ArrayList(pairedDevices))
-        }
-    }
-
-    override suspend fun connectToDevice(
-        bluetoothDevice: BluetoothDevice
-    ): ResponseState<BluetoothSocket> {
-        val uuid: UUID = UUID.fromString(Const.UUID)
-        bluetoothDevice.createRfcommSocketToServiceRecord(uuid).apply {
-            connect()
-            return if (isConnected) {
-                ResponseState.Success(this)
-            } else {
-                ResponseState.Error("Connection Failed")
-            }
-        }
-    }
-
     override suspend fun getSpeed(bluetoothSocket: BluetoothSocket): ResponseState<ObdResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val outputStream = bluetoothSocket.outputStream
-                val inputStream = bluetoothSocket.inputStream
-
-                val obdConnection = ObdDeviceConnection(inputStream, outputStream)
-                val speedResponse = obdConnection.run(SpeedCommand(), delayTime = 500L, maxRetries = 5)
+                val obdConnection = ObdDeviceConnection(bluetoothSocket.inputStream, bluetoothSocket.outputStream)
+                val speedResponse = obdConnection.run(SpeedCommand(), delayTime = 1000L, maxRetries = 5)
 
                 ResponseState.Success(speedResponse)
             } catch (e: IOException) {
@@ -65,11 +40,9 @@ class Repo
     override suspend fun getRPM(bluetoothSocket: BluetoothSocket): ResponseState<ObdResponse> {
         return withContext(Dispatchers.IO) {
             try {
-                val outputStream = bluetoothSocket.outputStream
-                val inputStream = bluetoothSocket.inputStream
 
-                val obdConnection = ObdDeviceConnection(inputStream, outputStream)
-                val rpmResponse = obdConnection.run(SpeedCommand(), delayTime = 2000L, maxRetries = 3)
+                val obdConnection = ObdDeviceConnection(bluetoothSocket.inputStream, bluetoothSocket.outputStream)
+                val rpmResponse = obdConnection.run(RPMCommand(), delayTime = 2000L, maxRetries = 3)
 
                 ResponseState.Success(rpmResponse)
             } catch (e: IOException) {
@@ -109,4 +82,24 @@ class Repo
         }
     }
 
+    override suspend fun getPairedDevices(bluetoothAdapter: BluetoothAdapter): ResponseState<List<BluetoothDevice>> {
+        return run {
+            val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter.bondedDevices
+            ResponseState.Success(ArrayList(pairedDevices))
+        }
+    }
+
+    override suspend fun connectToDevice(
+        bluetoothDevice: BluetoothDevice
+    ): ResponseState<BluetoothSocket> {
+        val uuid: UUID = UUID.fromString(Const.UUID)
+        bluetoothDevice.createRfcommSocketToServiceRecord(uuid).apply {
+            connect()
+            return if (isConnected) {
+                ResponseState.Success(this)
+            } else {
+                ResponseState.Error("Connection Failed")
+            }
+        }
+    }
 }
