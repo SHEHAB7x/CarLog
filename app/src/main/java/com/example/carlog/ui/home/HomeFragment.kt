@@ -107,6 +107,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun getData(bluetoothSocket: BluetoothSocket?) {
+        Toast.makeText(requireContext(),"Get Data",Toast.LENGTH_SHORT).show()
         viewModel.getSpeed(bluetoothSocket!!)
         viewModel.getRPM(bluetoothSocket)
     }

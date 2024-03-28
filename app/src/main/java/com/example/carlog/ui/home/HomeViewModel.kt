@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,16 +25,17 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     val liveRPM: LiveData<ResponseState<ObdResponse>> get() = _liveRPM
 
     fun getSpeed(bluetoothSocket: BluetoothSocket) {
-        viewModelScope.launch(Dispatchers.IO) {
-            while (isActive) {
+        viewModelScope.launch(Dispatchers.IO){
+            while (isActive){
                 try {
                     _liveSpeed.postValue(repo.getSpeed(bluetoothSocket))
-                } catch (e: Exception) {
-                    _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("viewModel s Exception: $it") })
+                }catch (e:Exception){
+                    _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("View Model Exception: $it") })
                 }
             }
         }
     }
+
 
     fun getRPM(bluetoothSocket: BluetoothSocket){
         viewModelScope.launch(Dispatchers.IO) {
