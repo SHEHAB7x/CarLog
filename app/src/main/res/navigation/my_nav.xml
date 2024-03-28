@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_homeFragment_to_chatsFragment"
             app:destination="@id/chatsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_connectFragment"
+            app:destination="@id/connectFragment" />
     </fragment>
     <fragment
         android:id="@+id/connectFragment"

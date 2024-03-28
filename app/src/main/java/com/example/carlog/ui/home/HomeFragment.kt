@@ -52,6 +52,7 @@ class HomeFragment : Fragment() {
                 is ResponseState.Error ->{
                     binding.loading.visibility = View.GONE
                     Toast.makeText(requireContext(),socket.message,Toast.LENGTH_SHORT).show()
+                    Navigation.findNavController(binding.root).navigate(R.id.action_homeFragment_to_connectFragment)
                 }
                 ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
             }
@@ -62,14 +63,30 @@ class HomeFragment : Fragment() {
                 is ResponseState.Success -> {
                     binding.speed.text = state.data.value
                     binding.rawData.text = state.data.unit
+                    binding.rawData.visibility = View.VISIBLE
                     binding.socketStatus.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
+                    binding.socketStatus.visibility = View.VISIBLE
                     binding.socketStatus.text = getString(R.string.success)
+                    binding.idlingWord.text = state.data.rawResponse.toString()
                 }
                 is ResponseState.Error -> {
                     binding.socketStatus.visibility = View.VISIBLE
                     binding.socketStatus.text = state.message
                 }
                 ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
+                else -> binding.loading.visibility = View.GONE
+            }
+        }
+
+        viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ResponseState.Success -> {
+                    binding.RPM.text = state.data.value
+                }
+                is ResponseState.Error -> {
+                    binding.socketStatus.visibility = View.VISIBLE
+                    binding.socketStatus.text = state.message
+                }
                 else -> binding.loading.visibility = View.GONE
             }
         }
@@ -91,6 +108,7 @@ class HomeFragment : Fragment() {
 
     private fun getData(bluetoothSocket: BluetoothSocket?) {
         viewModel.getSpeed(bluetoothSocket!!)
+        viewModel.getRPM(bluetoothSocket)
     }
 
     private fun onClicks() {

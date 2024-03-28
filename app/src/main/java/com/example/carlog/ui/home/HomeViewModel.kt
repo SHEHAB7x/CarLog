@@ -20,15 +20,28 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     private val _liveSpeed = MutableLiveData<ResponseState<ObdResponse>>()
     val liveSpeed: LiveData<ResponseState<ObdResponse>> get() = _liveSpeed
 
+    private val _liveRPM = MutableLiveData<ResponseState<ObdResponse>>()
+    val liveRPM: LiveData<ResponseState<ObdResponse>> get() = _liveRPM
 
     fun getSpeed(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
                 try {
                     _liveSpeed.postValue(repo.getSpeed(bluetoothSocket))
-                    delay(500)
                 } catch (e: Exception) {
                     _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("viewModel s Exception: $it") })
+                }
+            }
+        }
+    }
+
+    fun getRPM(bluetoothSocket: BluetoothSocket){
+        viewModelScope.launch(Dispatchers.IO) {
+            while (isActive){
+                try {
+                    _liveRPM.postValue(repo.getRPM(bluetoothSocket))
+                }catch (e : Exception){
+                    _liveRPM.postValue(e.localizedMessage?.let { ResponseState.Error("viewModel s Exception: $it") })
                 }
             }
         }
