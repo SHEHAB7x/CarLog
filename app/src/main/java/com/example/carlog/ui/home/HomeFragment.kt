@@ -36,9 +36,10 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeSocket()
         onClicks()
         observers()
-        initializeSocket()
+
     }
 
     private fun observers() {
@@ -61,13 +62,12 @@ class HomeFragment : Fragment() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.speed.text = state.data.value
-                    binding.rawData.text = state.data.unit
+                    binding.speed.text = state.data
                     binding.rawData.visibility = View.VISIBLE
                     binding.socketStatus.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
                     binding.socketStatus.visibility = View.VISIBLE
                     binding.socketStatus.text = getString(R.string.success)
-                    binding.idlingWord.text = state.data.rawResponse.toString()
+                    binding.idlingWord.text = state.data
                 }
                 is ResponseState.Error -> {
                     binding.socketStatus.visibility = View.VISIBLE
@@ -81,7 +81,20 @@ class HomeFragment : Fragment() {
         viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.RPM.text = state.data.value
+                    binding.RPM.text = state.data
+                }
+                is ResponseState.Error -> {
+                    binding.socketStatus.visibility = View.VISIBLE
+                    binding.socketStatus.text = state.message
+                }
+                else -> binding.loading.visibility = View.GONE
+            }
+        }
+
+        viewModel.liveFuel.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ResponseState.Success -> {
+                    binding.idling.text = state.data
                 }
                 is ResponseState.Error -> {
                     binding.socketStatus.visibility = View.VISIBLE
@@ -110,6 +123,7 @@ class HomeFragment : Fragment() {
         Toast.makeText(requireContext(),"Get Data",Toast.LENGTH_SHORT).show()
         viewModel.getSpeed(bluetoothSocket!!)
         viewModel.getRPM(bluetoothSocket)
+        viewModel.getFuel(bluetoothSocket)
     }
 
     private fun onClicks() {

@@ -151,7 +151,7 @@
         android:id="@+id/idlingWord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Idling"
+        android:text="Fuel"
         android:textSize="18sp"
         android:layout_marginBottom="5dp"
         android:textColor="#888888"

@@ -18,11 +18,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
-    private val _liveSpeed = MutableLiveData<ResponseState<ObdResponse>>()
-    val liveSpeed: LiveData<ResponseState<ObdResponse>> get() = _liveSpeed
+    private val _liveSpeed = MutableLiveData<ResponseState<String>>()
+    val liveSpeed: LiveData<ResponseState<String>> get() = _liveSpeed
 
-    private val _liveRPM = MutableLiveData<ResponseState<ObdResponse>>()
-    val liveRPM: LiveData<ResponseState<ObdResponse>> get() = _liveRPM
+    private val _liveRPM = MutableLiveData<ResponseState<String>>()
+    val liveRPM: LiveData<ResponseState<String>> get() = _liveRPM
+
+    private val _liveFuel = MutableLiveData<ResponseState<String>>()
+    val liveFuel: LiveData<ResponseState<String>> get() = _liveFuel
 
     fun getSpeed(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO){
@@ -46,6 +49,19 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
                     delay(3000)
                 }catch (e : Exception){
                     _liveRPM.postValue(e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") })
+                }
+            }
+        }
+    }
+
+    fun getFuel(bluetoothSocket: BluetoothSocket){
+        viewModelScope.launch(Dispatchers.IO) {
+            while (isActive){
+                try {
+                    _liveFuel.postValue(repo.getFuel(bluetoothSocket))
+                    delay(2000)
+                }catch (e : Exception){
+                    _liveFuel.postValue(e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") })
                 }
             }
         }
