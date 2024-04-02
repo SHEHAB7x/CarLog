@@ -42,7 +42,7 @@ class Repo
             try {
 
                 val obdConnection = ObdDeviceConnection(bluetoothSocket.inputStream, bluetoothSocket.outputStream)
-                val rpmResponse = obdConnection.run(RPMCommand(), delayTime = 2000L, maxRetries = 3)
+                val rpmResponse = obdConnection.run(RPMCommand(), delayTime = 1000L, maxRetries = 3)
 
                 ResponseState.Success(rpmResponse)
             } catch (e: IOException) {
@@ -57,7 +57,7 @@ class Repo
                 val inputStream = bluetoothSocket.inputStream
 
                 val obdConnection = ObdDeviceConnection(inputStream, outputStream)
-                val rpmResponse = obdConnection.run(FuelLevelCommand(), delayTime = 10000L, maxRetries = 3)
+                val rpmResponse = obdConnection.run(FuelLevelCommand(), delayTime = 1000L, maxRetries = 3)
 
                 ResponseState.Success(rpmResponse)
             } catch (e: IOException) {
