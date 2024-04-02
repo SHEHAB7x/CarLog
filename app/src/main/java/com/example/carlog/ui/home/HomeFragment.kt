@@ -62,16 +62,15 @@ class HomeFragment : Fragment() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.speed.text = state.data
-                    binding.rawData.visibility = View.VISIBLE
-                    binding.socketStatus.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
-                    binding.socketStatus.visibility = View.VISIBLE
-                    binding.socketStatus.text = getString(R.string.success)
-                    binding.idlingWord.text = state.data
+                    binding.speedValue.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
+                    binding.speedValue.text = "Success"
+                    binding.speedRawData.text = state.data
                 }
                 is ResponseState.Error -> {
-                    binding.socketStatus.visibility = View.VISIBLE
-                    binding.socketStatus.text = state.message
+                    binding.speedValue.text = "Error"
+                    binding.speedRawData.text = state.message
+                    binding.speedValue.setTextColor(ContextCompat.getColor(requireContext(),R.color.red))
+
                 }
                 ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
                 else -> binding.loading.visibility = View.GONE
@@ -81,11 +80,16 @@ class HomeFragment : Fragment() {
         viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.RPM.text = state.data
+                    binding.rpmValue.text = "Success"
+                    binding.rpmRawData.text = state.data
+                    binding.rpmValue.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
+
                 }
                 is ResponseState.Error -> {
-                    binding.socketStatus.visibility = View.VISIBLE
-                    binding.socketStatus.text = state.message
+                    binding.rpmValue.text = "Error"
+                    binding.rpmRawData.text = state.message
+                    binding.rpmValue.setTextColor(ContextCompat.getColor(requireContext(),R.color.red))
+
                 }
                 else -> binding.loading.visibility = View.GONE
             }
@@ -94,11 +98,16 @@ class HomeFragment : Fragment() {
         viewModel.liveFuel.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.idling.text = state.data
+                    binding.fuelRawData.text = state.data
+                    binding.fuelValue.text = "Success"
+                    binding.fuelValue.setTextColor(ContextCompat.getColor(requireContext(),R.color.green))
+
                 }
                 is ResponseState.Error -> {
-                    binding.socketStatus.visibility = View.VISIBLE
-                    binding.socketStatus.text = state.message
+                    binding.fuelValue.text = "Error"
+                    binding.fuelRawData.text = state.message
+                    binding.fuelValue.setTextColor(ContextCompat.getColor(requireContext(),R.color.red))
+
                 }
                 else -> binding.loading.visibility = View.GONE
             }
@@ -112,7 +121,7 @@ class HomeFragment : Fragment() {
         if (bluetoothSocket != null) {
             Toast.makeText(requireContext(),"Socket is connected",Toast.LENGTH_SHORT).show()
             binding.socketStatus.visibility = View.GONE
-            getData(bluetoothSocket)
+            //getData(bluetoothSocket)
         } else {
             Toast.makeText(requireContext(),"Noo Socket",Toast.LENGTH_SHORT).show()
             binding.socketStatus.visibility = View.VISIBLE
@@ -132,6 +141,40 @@ class HomeFragment : Fragment() {
         }
         binding.btnMessage.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_chatsFragment)
+        }
+
+        binding.btnGetSpeed.setOnClickListener {
+            val myApp = activity?.application as App
+            val bluetoothSocket = myApp.bluetoothSocket
+            if (bluetoothSocket == null) {
+                Toast.makeText(requireContext(),"Socket Disconnected",Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_connectFragment)
+            } else {
+                Toast.makeText(requireContext(),"Getting Speed",Toast.LENGTH_SHORT).show()
+                viewModel.getSpeedOnce(bluetoothSocket)
+            }
+        }
+        binding.btnGetRPM.setOnClickListener {
+            val myApp = activity?.application as App
+            val bluetoothSocket = myApp.bluetoothSocket
+            if (bluetoothSocket == null) {
+                Toast.makeText(requireContext(),"Socket Disconnected",Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_connectFragment)
+            } else {
+                Toast.makeText(requireContext(),"Getting RPM",Toast.LENGTH_SHORT).show()
+                viewModel.getRPMOnce(bluetoothSocket)
+            }
+        }
+        binding.btnGetFuel.setOnClickListener {
+            val myApp = activity?.application as App
+            val bluetoothSocket = myApp.bluetoothSocket
+            if (bluetoothSocket == null) {
+                Toast.makeText(requireContext(),"Socket Disconnected",Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_connectFragment)
+            } else {
+                Toast.makeText(requireContext(),"Getting Fuel",Toast.LENGTH_SHORT).show()
+                viewModel.getFuelOnce(bluetoothSocket)
+            }
         }
     }
 

@@ -28,41 +28,74 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     val liveFuel: LiveData<ResponseState<String>> get() = _liveFuel
 
     fun getSpeed(bluetoothSocket: BluetoothSocket) {
-        viewModelScope.launch(Dispatchers.IO){
-            while (isActive){
+        viewModelScope.launch(Dispatchers.IO) {
+            while (isActive) {
                 try {
                     _liveSpeed.postValue(repo.getSpeed(bluetoothSocket))
                     delay(1000)
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("Speed Exception: $it") })
                 }
             }
         }
     }
 
-
-    fun getRPM(bluetoothSocket: BluetoothSocket){
+    fun getSpeedOnce(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO) {
-            while (isActive){
+            try {
+                _liveSpeed.postValue(repo.getSpeed(bluetoothSocket))
+                delay(1000)
+            } catch (e: Exception) {
+                _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("Speed Exception: $it") })
+            }
+        }
+    }
+
+
+    fun getRPM(bluetoothSocket: BluetoothSocket) {
+        viewModelScope.launch(Dispatchers.IO) {
+            while (isActive) {
                 try {
                     _liveRPM.postValue(repo.getRPM(bluetoothSocket))
                     delay(3000)
-                }catch (e : Exception){
+                } catch (e: Exception) {
                     _liveRPM.postValue(e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") })
                 }
             }
         }
     }
 
-    fun getFuel(bluetoothSocket: BluetoothSocket){
+    fun getRPMOnce(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO) {
-            while (isActive){
+            try {
+                _liveRPM.postValue(repo.getRPM(bluetoothSocket))
+                delay(3000)
+            } catch (e: Exception) {
+                _liveRPM.postValue(e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") })
+            }
+        }
+    }
+
+    fun getFuel(bluetoothSocket: BluetoothSocket) {
+        viewModelScope.launch(Dispatchers.IO) {
+            while (isActive) {
                 try {
                     _liveFuel.postValue(repo.getFuel(bluetoothSocket))
                     delay(2000)
-                }catch (e : Exception){
+                } catch (e: Exception) {
                     _liveFuel.postValue(e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") })
                 }
+            }
+        }
+    }
+
+    fun getFuelOnce(bluetoothSocket: BluetoothSocket) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _liveFuel.postValue(repo.getFuel(bluetoothSocket))
+                delay(2000)
+            } catch (e: Exception) {
+                _liveFuel.postValue(e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") })
             }
         }
     }

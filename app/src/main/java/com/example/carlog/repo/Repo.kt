@@ -36,10 +36,8 @@ class Repo
         var rawData = ""
         val inputStream = bluetoothSocket.inputStream
         val outputStream = bluetoothSocket.outputStream
-        val elapsedTime = measureTimeMillis {
-            sendCommand(command, delayTime, outputStream)
-            rawData = readRawData(maxRetries, inputStream)
-        }
+        sendCommand(command, delayTime, outputStream)
+        rawData = readRawData(maxRetries, inputStream)
         return rawData
     }
 
