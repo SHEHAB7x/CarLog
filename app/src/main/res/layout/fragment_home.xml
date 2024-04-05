@@ -190,7 +190,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/bottom_bar" />
 
-    <com.google.android.material.button.MaterialButton
+    <!--<com.google.android.material.button.MaterialButton
         android:id="@+id/btnGetSpeed"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
@@ -213,7 +213,7 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/socketStatus"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnGetFuel" />
+        app:layout_constraintStart_toEndOf="@+id/btnGetFuel" />-->
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGetFuel"
@@ -225,6 +225,7 @@
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/socketStatus"
-        app:layout_constraintStart_toEndOf="@+id/btnGetSpeed" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
