@@ -37,8 +37,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClicks()
-        observers()
         initializeSocket()
+        observers()
     }
 
     private fun observers() {
@@ -64,8 +64,8 @@ class HomeFragment : Fragment() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.speedValue.text = state.data.value
-                    binding.speedRawData.text = state.data.rawResponse.processedValue
+                    binding.speedValue.text = state.data.toString()
+                    binding.speedRawData.text = "Success"
 
                     binding.speedValue.setTextColor(
                         ContextCompat.getColor(
@@ -93,65 +93,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is ResponseState.Success -> {
-                    binding.rpmValue.text = state.data.value
-                    binding.rpmRawData.text = state.data.rawResponse.processedValue
-                    binding.rpmValue.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.green
-                        )
-                    )
-                }
-
-                is ResponseState.Error -> {
-                    binding.rpmValue.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.red
-                        )
-                    )
-                    binding.rpmValue.text = "Error"
-                    binding.rpmRawData.text = state.message
-                }
-
-                else -> {
-                    binding.rpmValue.text = "Else"
-                    binding.rpmRawData.text = "Else"
-                }
-            }
-        }
-        viewModel.liveFuel.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is ResponseState.Success -> {
-                    binding.fuelValue.text = state.data.value
-                    binding.fuelRawData.text = state.data.rawResponse.processedValue
-                    binding.fuelValue.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.green
-                        )
-                    )
-                }
-
-                is ResponseState.Error -> {
-                    binding.fuelValue.text = "Error"
-                    binding.fuelRawData.text = state.message
-                    binding.fuelValue.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.red
-                        )
-                    )
-                }
-                else -> {
-                    binding.fuelValue.text = "Else"
-                    binding.fuelRawData.text = "Else"
-                }
-            }
-        }
 
     }
 
@@ -174,8 +115,6 @@ class HomeFragment : Fragment() {
             Toast.makeText(requireContext(), "Bluetooth socket is null!", Toast.LENGTH_SHORT).show()
         }else{
             viewModel.getSpeed(bluetoothSocket)
-            viewModel.getRPM(bluetoothSocket)
-            viewModel.getFuel(bluetoothSocket)
         }
 
     }
