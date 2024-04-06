@@ -37,7 +37,6 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     private val _liveFuel = MutableLiveData<ResponseState<ModelResponse>>()
     val liveFuel: LiveData<ResponseState<ModelResponse>> get() = _liveFuel*/
 
-
     fun getSpeed(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
@@ -50,10 +49,12 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
             }
         }
     }
+
     fun getRPM(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
                 try {
+                    delay(10000)
                     _liveRPM.postValue(repo.getRPM(bluetoothSocket))
                 } catch (e: Exception) {
                     _liveRPM.postValue(e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") })
@@ -61,10 +62,12 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
             }
         }
     }
+
     fun getFuel(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
                 try {
+                    delay(15000)
                     _liveFuel.postValue(repo.getFuel(bluetoothSocket))
                     delay(2000)
                 } catch (e: Exception) {
