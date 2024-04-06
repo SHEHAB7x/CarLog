@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothSocket
 import android.util.Log
 import com.example.carlog.network.ResponseState
 import com.example.carlog.utils.Const
+import com.example.carlog.utils.Const.Companion.OBD_ACTIVATE_AUTO_PROTOCOL_SEARCH
+import com.example.carlog.utils.Const.Companion.OBD_RESET
 import com.example.carlog.utils.Const.Companion.OBD_SPEED
 import com.example.carlog.utils.Const.Companion.OBD_SPEED_RESPONSE
 import com.github.eltonvs.obd.command.ObdResponse
@@ -39,6 +41,15 @@ class Repo
 
         val speed = parseSpeed(speedResponse)
         return ResponseState.Success(speed)
+    }
+    private suspend fun resetDevice(inputStream: InputStream?, outputStream: OutputStream?) {
+        if (inputStream == null || outputStream == null) {
+            Log.e("INIT_ERROR", "Socket not set")
+            return
+        }
+
+        sendCommand(inputStream, outputStream, OBD_RESET)
+        sendCommand(inputStream, outputStream, OBD_ACTIVATE_AUTO_PROTOCOL_SEARCH)
     }
 
 
@@ -135,6 +146,7 @@ class Repo
         bluetoothDevice.createRfcommSocketToServiceRecord(uuid).apply {
             connect()
             return if (isConnected) {
+                resetDevice(this.inputStream,this.outputStream)
                 ResponseState.Success(this)
             } else {
                 ResponseState.Error("Connection Failed")

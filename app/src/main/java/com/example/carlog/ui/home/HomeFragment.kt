@@ -126,7 +126,7 @@ class HomeFragment : Fragment() {
         binding.btnMessage.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_chatsFragment)
         }
-        binding.btnGetFuel.setOnClickListener {
+        binding.btnReset.setOnClickListener {
         }
     }
 
