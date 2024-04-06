@@ -127,6 +127,14 @@ class HomeFragment : Fragment() {
             Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_chatsFragment)
         }
         binding.btnReset.setOnClickListener {
+            val myApp = activity?.application as App
+            val bluetoothSocket = myApp.bluetoothSocket
+
+            if (bluetoothSocket == null) {
+               Toast.makeText(requireContext(),"Can't reset socket is null",Toast.LENGTH_SHORT).show()
+            }else{
+                viewModel.resetDevice(bluetoothSocket)
+            }
         }
     }
 

@@ -50,4 +50,10 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
         }
     }
 
+    fun resetDevice(bluetoothSocket: BluetoothSocket){
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.resetDevice(bluetoothSocket.inputStream,bluetoothSocket.outputStream)
+        }
+    }
+
 }

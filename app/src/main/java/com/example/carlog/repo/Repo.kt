@@ -42,7 +42,7 @@ class Repo
         val speed = parseSpeed(speedResponse)
         return ResponseState.Success(speed)
     }
-    private suspend fun resetDevice(inputStream: InputStream?, outputStream: OutputStream?) {
+    suspend fun resetDevice(inputStream: InputStream?, outputStream: OutputStream?) {
         if (inputStream == null || outputStream == null) {
             Log.e("INIT_ERROR", "Socket not set")
             return
