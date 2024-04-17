@@ -6,8 +6,10 @@ import android.bluetooth.BluetoothSocket
 import android.util.Log
 import com.example.carlog.network.ResponseState
 import com.example.carlog.utils.Const
+import com.example.carlog.utils.Const.Companion.OBD_RPM_RESPONSE
 import com.example.carlog.utils.Const.Companion.OBD_SPEED
 import com.example.carlog.utils.Const.Companion.OBD_SPEED_RESPONSE
+import com.example.carlog.utils.Const.Companion.RPM
 import com.github.eltonvs.obd.command.ObdResponse
 import com.github.eltonvs.obd.command.RegexPatterns.SEARCHING_PATTERN
 import com.github.eltonvs.obd.command.control.TimingAdvanceCommand
@@ -32,21 +34,28 @@ class Repo
 @Inject constructor() : IRepo {
 
     override suspend fun getSpeed(bluetoothSocket: BluetoothSocket): ResponseState<Int> {
-        val speedResponse = sendCommand(bluetoothSocket.inputStream, bluetoothSocket.outputStream, OBD_SPEED)
+        val speedResponse =
+            sendCommand(bluetoothSocket.inputStream, bluetoothSocket.outputStream, OBD_SPEED)
         if (!speedResponse.contains(OBD_SPEED_RESPONSE)) {
             ResponseState.Error("OBD_ERROR\", \"Invalid response for speed command: $speedResponse")
         }
 
-        val speed = parseSpeed(speedResponse)
+        val speed = parseResponse(speedResponse)
         return ResponseState.Success(speed)
     }
 
+    override suspend fun getRPM(bluetoothSocket: BluetoothSocket): ResponseState<Int> {
+        val rpmResponse =
+            sendCommand(bluetoothSocket.inputStream, bluetoothSocket.outputStream, RPM)
+        if (!rpmResponse.contains(OBD_RPM_RESPONSE)) {
+            ResponseState.Error("OBD_ERROR\", \"Invalid response for RPM command: $rpmResponse")
+        }
+        val rpm = parseResponse(rpmResponse)
+        return ResponseState.Success(rpm)
+    }
 
-    private suspend fun sendCommand(
-        inputStream: InputStream,
-        outputStream: OutputStream,
-        command: String
-    ): String {
+
+    private suspend fun sendCommand(inputStream: InputStream, outputStream: OutputStream, command: String): String {
         val sendData = command.toByteArray()
 
         withContext(Dispatchers.IO) {
@@ -73,15 +82,19 @@ class Repo
                 inputStream.read(buffer)
             } catch (e: IOException) {
                 ResponseState.Error("Error read buffer ${e.localizedMessage}")
-                Log.e("dosifdsj","sdfsd")
+                Log.e("dosifdsj", "sdfsd")
             }
         }
 
         return String(buffer, 0, bytesRead).trim()
     }
 
-    private fun parseSpeed(response: String): Int {
-        val cleanedResponse = response.replace("\r", "").replace("\n", "").replace(">", "")
+    private fun parseResponse(response: String): Int {
+        val cleanedResponse = response
+            .replace("\r", "")
+            .replace("\n", "")
+            .replace(">", "")
+
         val dataFields = cleanedResponse.split(" ")
         if (dataFields.size < 4) {
             return -1
@@ -89,22 +102,6 @@ class Repo
         val hexResult = dataFields[3].replace(">", "")
         return hexResult.toInt(16)
     }
-
-
- /*   override suspend fun getRPM(bluetoothSocket: BluetoothSocket): ResponseState<ObdResponse> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val obdConnection =
-                    ObdDeviceConnection(bluetoothSocket.inputStream, bluetoothSocket.outputStream)
-                val rpmResponse =
-                    obdConnection.run(RPMCommand(), delayTime = 1000L, maxRetries = 50)
-
-                ResponseState.Success(rpmResponse)
-            } catch (e: IOException) {
-                ResponseState.Error("Failed to get RPM: ${e.localizedMessage}")
-            }
-        }
-    }*/
 
     suspend fun getTiming(bluetoothSocket: BluetoothSocket): ResponseState<ObdResponse> {
         return withContext(Dispatchers.IO) {

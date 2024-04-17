@@ -3,7 +3,7 @@ package com.example.carlog.utils
 class Const {
     companion object {
         const val SPEED = "01 0D"
-        const val RPM = "01 0C"
+        const val RPM = "01 0C\r"
         const val FUEL = "012F"
         const val AUTO = "AT SP 0"
         const val UNKNOWN_DEVICE = "Unknown Device"
@@ -15,5 +15,6 @@ class Const {
 
         const val OBD_SPEED = "01 0D\r"
         const val OBD_SPEED_RESPONSE = "41 0D"
+        const val OBD_RPM_RESPONSE = "41 0C"
     }
 }
