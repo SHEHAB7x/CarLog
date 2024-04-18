@@ -9,4 +9,6 @@
     <string name="socket_is_null">Socket is Null!</string>
     <string name="disconnected">Disconnected</string>
     <string name="success">Success</string>
+    <string name="end_trip">End Trip</string>
+    <string name="start_trip">Start Trip</string>
 </resources>

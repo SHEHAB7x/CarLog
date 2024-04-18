@@ -30,7 +30,6 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
                 try {
                     val speedState = repo.getSpeed(bluetoothSocket)
                     _liveSpeed.postValue(speedState)
-
                     if (speedState is ResponseState.Success) {
                         _speedValues.add(speedState.data)
                     }

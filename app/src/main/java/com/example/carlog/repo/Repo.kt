@@ -32,7 +32,6 @@ import kotlin.system.measureTimeMillis
 
 class Repo
 @Inject constructor() : IRepo {
-
     override suspend fun getSpeed(bluetoothSocket: BluetoothSocket): ResponseState<Int> {
         val speedResponse =
             sendCommand(bluetoothSocket.inputStream, bluetoothSocket.outputStream, OBD_SPEED)
@@ -53,7 +52,6 @@ class Repo
         val rpm = parseResponse(rpmResponse)
         return ResponseState.Success(rpm)
     }
-
 
     private suspend fun sendCommand(inputStream: InputStream, outputStream: OutputStream, command: String): String {
         val sendData = command.toByteArray()
@@ -101,23 +99,6 @@ class Repo
         }
         val hexResult = dataFields[3].replace(">", "")
         return hexResult.toInt(16)
-    }
-
-    suspend fun getTiming(bluetoothSocket: BluetoothSocket): ResponseState<ObdResponse> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val outputStream = bluetoothSocket.outputStream
-                val inputStream = bluetoothSocket.inputStream
-
-                val obdConnection = ObdDeviceConnection(inputStream, outputStream)
-                val rpmResponse =
-                    obdConnection.run(TimingAdvanceCommand(), delayTime = 10000L, maxRetries = 20)
-
-                ResponseState.Success(rpmResponse)
-            } catch (e: IOException) {
-                ResponseState.Error("Failed to get Timing: ${e.localizedMessage}")
-            }
-        }
     }
 
     override suspend fun getPairedDevices(bluetoothAdapter: BluetoothAdapter): ResponseState<List<BluetoothDevice>> {
