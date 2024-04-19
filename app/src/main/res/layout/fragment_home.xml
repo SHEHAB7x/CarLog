@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="40dp"
-        android:background="@drawable/home_circle"
+        android:background="@drawable/blue_circle"
         android:backgroundTint="@color/btn_color"
         android:gravity="center"
         android:text="0"
@@ -85,21 +85,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:text="@string/cornering"
+        android:text="@string/excessive_idling"
         android:textColor="#888888"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/cornering"
-        app:layout_constraintEnd_toEndOf="@+id/cornering"
-        app:layout_constraintStart_toStartOf="@+id/cornering" />
+        app:layout_constraintBottom_toTopOf="@+id/idling"
+        app:layout_constraintEnd_toEndOf="@+id/idling"
+        app:layout_constraintStart_toStartOf="@+id/idling" />
 
     <TextView
-        android:id="@+id/cornering"
+        android:id="@+id/idling"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="60dp"
-        android:background="@drawable/home_circle"
-        android:backgroundTint="@color/btn_color"
+        android:background="@drawable/blue_circle"
         android:gravity="center"
         android:text="0"
         android:textColor="@color/white"
@@ -126,8 +125,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="50dp"
-        android:background="@drawable/home_circle"
-        android:backgroundTint="@color/btn_color"
+        android:background="@drawable/blue_circle"
         android:gravity="center"
         android:text="0"
         android:textColor="@color/white"
@@ -154,8 +152,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:layout_marginEnd="50dp"
-        android:background="@drawable/home_circle"
-        android:backgroundTint="@color/btn_color"
+        android:background="@drawable/blue_circle"
         android:gravity="center"
         android:text="0"
         android:textColor="@color/white"
@@ -180,8 +177,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/home_circle"
-        android:backgroundTint="@color/btn_color"
+        android:background="@drawable/blue_circle"
         android:gravity="center"
         android:text="0"
         android:textColor="@color/white"
@@ -201,7 +197,7 @@
         app:layout_constraintStart_toEndOf="@+id/speed" />
 
 
-    <com.google.android.material.button.MaterialButton
+    <!--<com.google.android.material.button.MaterialButton
         android:id="@+id/btnStartTrip"
         android:layout_width="0dp"
         android:layout_height="60dp"
@@ -210,22 +206,22 @@
         android:textColor="@color/white"
         android:textSize="20sp"
         android:layout_marginBottom="60dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:layout_constraintWidth_percent=".40" />
+        app:layout_constraintWidth_percent=".40" />-->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEndTrip"
         android:layout_width="0dp"
         android:layout_height="60dp"
+        android:layout_marginBottom="60dp"
         android:backgroundTint="@color/red"
         android:text="@string/end_trip"
         android:textColor="@color/white"
         android:textSize="20sp"
-        android:layout_marginBottom="60dp"
-        android:layout_marginStart="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView3"
         app:layout_constraintWidth_percent=".40" />

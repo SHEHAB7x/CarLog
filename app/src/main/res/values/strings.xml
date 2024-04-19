@@ -11,4 +11,5 @@
     <string name="success">Success</string>
     <string name="end_trip">End Trip</string>
     <string name="start_trip">Start Trip</string>
+    <string name="excessive_idling">Excessive Idling</string>
 </resources>
