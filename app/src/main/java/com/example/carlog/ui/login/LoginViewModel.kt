@@ -10,5 +10,7 @@ class LoginViewModel : ViewModel() {
     private var _loginLiveData = MutableLiveData<ResponseState<ModelUser>>()
     val loginLiveData : LiveData<ResponseState<ModelUser>> = _loginLiveData
 
+    fun loginUser(email: String, password: String) {
 
+    }
 }

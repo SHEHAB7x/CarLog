@@ -7,4 +7,8 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class App : Application() {
     var bluetoothSocket: BluetoothSocket? = null
+    override fun onCreate() {
+        super.onCreate()
+        MySharedPreferences.init(this)
+    }
 }

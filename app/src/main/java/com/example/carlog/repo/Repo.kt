@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
 import com.example.carlog.network.ResponseState
+import com.example.carlog.network.RetrofitService
 import com.example.carlog.utils.Const
 import com.example.carlog.utils.Const.Companion.OBD_RPM_RESPONSE
 import com.example.carlog.utils.Const.Companion.OBD_SPEED
@@ -31,7 +32,7 @@ import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
 class Repo
-@Inject constructor() : IRepo {
+@Inject constructor(private val retrofitService: RetrofitService) : IRepo {
     override suspend fun getSpeed(bluetoothSocket: BluetoothSocket): ResponseState<Int> {
         val speedResponse =
             sendCommand(bluetoothSocket.inputStream, bluetoothSocket.outputStream, OBD_SPEED)

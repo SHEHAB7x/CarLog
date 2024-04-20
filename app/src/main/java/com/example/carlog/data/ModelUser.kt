@@ -1,4 +1,6 @@
 package com.example.carlog.data
 
-class ModelUser {
-}
+data class ModelUser(
+    val email: String,
+    val password: String
+)
