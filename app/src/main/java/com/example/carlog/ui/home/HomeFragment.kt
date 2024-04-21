@@ -99,7 +99,7 @@ class HomeFragment : Fragment() {
         if (bluetoothSocket != null) {
             Toast.makeText(requireContext(), "Socket is connected", Toast.LENGTH_SHORT).show()
             getData(bluetoothSocket)
-            acceleration()
+            //acceleration()
         } else {
             Toast.makeText(requireContext(), "Disconnected", Toast.LENGTH_SHORT).show()
         }
@@ -171,17 +171,6 @@ class HomeFragment : Fragment() {
                 speedRating(speedValues)
             }
         }
-        /*binding.btnStartTrip.setOnClickListener {
-            val myApp = activity?.application as App
-            val bluetoothSocket = myApp.bluetoothSocket
-            if (bluetoothSocket != null) {
-                Toast.makeText(requireContext(), "The trip is Start", Toast.LENGTH_SHORT).show()
-                getData(bluetoothSocket)
-            } else {
-                Toast.makeText(requireContext(), "Null Socket please Reconnect", Toast.LENGTH_SHORT).show()
-                Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_connectFragment)
-            }
-        }*/
     }
 
     private fun speedRating(speedValues: List<Int>) {

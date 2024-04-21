@@ -32,7 +32,7 @@ import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
 class Repo
-@Inject constructor(private val retrofitService: RetrofitService) : IRepo {
+@Inject constructor() : IRepo {
     override suspend fun getSpeed(bluetoothSocket: BluetoothSocket): ResponseState<Int> {
         val speedResponse =
             sendCommand(bluetoothSocket.inputStream, bluetoothSocket.outputStream, OBD_SPEED)
@@ -108,12 +108,22 @@ class Repo
             ResponseState.Success(ArrayList(pairedDevices))
         }
     }
+    private suspend fun resetDevice(inputStream: InputStream?, outputStream: OutputStream?) {
+        if (inputStream == null || outputStream == null) {
+            Log.e("INIT_ERROR", "Socket not set")
+            return
+        }
+
+        sendCommand(inputStream, outputStream, Const.OBD_RESET)
+        sendCommand(inputStream, outputStream, Const.OBD_ACTIVATE_AUTO_PROTOCOL_SEARCH)
+    }
 
     override suspend fun connectToDevice(bluetoothDevice: BluetoothDevice): ResponseState<BluetoothSocket> {
         val uuid: UUID = UUID.fromString(Const.UUID)
         bluetoothDevice.createRfcommSocketToServiceRecord(uuid).apply {
             connect()
             return if (isConnected) {
+                resetDevice(this.inputStream,this.outputStream)
                 ResponseState.Success(this)
             } else {
                 ResponseState.Error("Connection Failed")
