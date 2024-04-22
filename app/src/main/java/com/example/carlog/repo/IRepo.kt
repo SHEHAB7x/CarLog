@@ -3,6 +3,7 @@ package com.example.carlog.repo
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import com.example.carlog.data.ModelUser
 import com.example.carlog.network.ResponseState
 
 interface IRepo {
@@ -10,4 +11,5 @@ interface IRepo {
     suspend fun connectToDevice(bluetoothDevice: BluetoothDevice) : ResponseState<BluetoothSocket>
     suspend fun getSpeed(bluetoothSocket: BluetoothSocket) : ResponseState<Int>
     suspend fun getRPM(bluetoothSocket: BluetoothSocket) : ResponseState<Int>
+    suspend fun login(email: String, password: String): ResponseState<ModelUser>
 }

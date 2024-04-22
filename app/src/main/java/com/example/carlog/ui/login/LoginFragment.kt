@@ -1,6 +1,7 @@
 package com.example.carlog.ui.login
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +49,8 @@ class LoginFragment : Fragment() {
 
     private fun showError(message: String) {
         binding.loading.visibility = View.GONE
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(),"Error: $message", Toast.LENGTH_SHORT).show()
+        Log.e("TAG", "showError: $message")
     }
 
     private fun navigateToHome(user: ModelUser) {
@@ -58,13 +60,16 @@ class LoginFragment : Fragment() {
     }
 
     private fun cacheUserData(user: ModelUser) {
-        MySharedPreferences.setUserEmail(user.email)
+        MySharedPreferences.setUserEmail(user.userEmail)
+        MySharedPreferences.setUserId(user.userID)
+        MySharedPreferences.setUserName(user.firstName + " " + user.lastName)
+        MySharedPreferences.setUserTOKEN(user.token)
     }
 
     private fun onClicks() {
         binding.btnLogin.setOnClickListener{
-            //validate()
-            Navigation.findNavController(binding.root).navigate(R.id.action_loginFragment_to_connectFragment)
+            validate()
+            //Navigation.findNavController(binding.root).navigate(R.id.action_loginFragment_to_connectFragment)
         }
     }
 

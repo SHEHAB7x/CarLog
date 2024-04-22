@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
+import com.example.carlog.data.ModelUser
+import com.example.carlog.network.LoginRequestBody
 import com.example.carlog.network.ResponseState
 import com.example.carlog.network.RetrofitService
 import com.example.carlog.utils.Const
@@ -11,17 +13,8 @@ import com.example.carlog.utils.Const.Companion.OBD_RPM_RESPONSE
 import com.example.carlog.utils.Const.Companion.OBD_SPEED
 import com.example.carlog.utils.Const.Companion.OBD_SPEED_RESPONSE
 import com.example.carlog.utils.Const.Companion.RPM
-import com.github.eltonvs.obd.command.ObdResponse
-import com.github.eltonvs.obd.command.RegexPatterns.SEARCHING_PATTERN
-import com.github.eltonvs.obd.command.control.TimingAdvanceCommand
-import com.github.eltonvs.obd.command.engine.RPMCommand
-import com.github.eltonvs.obd.command.engine.SpeedCommand
-import com.github.eltonvs.obd.command.fuel.FuelLevelCommand
-import com.github.eltonvs.obd.command.removeAll
-import com.github.eltonvs.obd.connection.ObdDeviceConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 import java.io.IOException
@@ -29,10 +22,10 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
 
 class Repo
-@Inject constructor() : IRepo {
+@Inject constructor(private val retrofitService: RetrofitService) : IRepo {
+
     override suspend fun getSpeed(bluetoothSocket: BluetoothSocket): ResponseState<Int> {
         val speedResponse =
             sendCommand(bluetoothSocket.inputStream, bluetoothSocket.outputStream, OBD_SPEED)
@@ -52,6 +45,15 @@ class Repo
         }
         val rpm = parseResponse(rpmResponse)
         return ResponseState.Success(rpm)
+    }
+
+    override suspend fun login(email: String, password: String): ResponseState<ModelUser> {
+        val response = retrofitService.loginUser(LoginRequestBody(email,password))
+        return if(response.statusCode.statusCode == 200){
+            ResponseState.Success(response)
+        }else{
+            ResponseState.Error("error")
+        }
     }
 
     private suspend fun sendCommand(inputStream: InputStream, outputStream: OutputStream, command: String): String {
