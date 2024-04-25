@@ -31,7 +31,7 @@
         app:layout_constraintTop_toBottomOf="@+id/carlog_txt" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tripTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="40 min"
@@ -52,7 +52,7 @@
         app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/tripTime" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -246,7 +246,7 @@
         app:layout_constraintStart_toStartOf="@+id/bottom_bar" />
 
     <ImageView
-        android:id="@+id/btnProfile"
+        android:id="@+id/btnHOme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
@@ -257,7 +257,7 @@
         app:layout_constraintStart_toStartOf="@+id/bottom_bar" />
 
     <ImageView
-        android:id="@+id/btnHome"
+        android:id="@+id/btnProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

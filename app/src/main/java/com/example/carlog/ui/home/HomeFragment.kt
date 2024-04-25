@@ -34,6 +34,9 @@ class HomeFragment : Fragment() {
     private val gravity = FloatArray(3)
     private val linearAcceleration = FloatArray(3)
     private val alpha = 0.8f
+    private var startTimeMillis: Long = 0L
+    private var endTimeMillis: Long = 0L
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,9 +50,35 @@ class HomeFragment : Fragment() {
         onClicks()
         initializeSocket()
         observers()
+        startTime()
+    }
+
+    private fun startTime() {
+        startTimeMillis = System.currentTimeMillis()
     }
 
     private fun observers() {
+        viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ResponseState.Success -> {
+                    binding.liveSpeed.text = state.data.toString()
+                }
+                is ResponseState.Error -> {
+                    Toast.makeText(requireContext(), "Speed Error: ${state.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ResponseState.Success -> {
+                    binding.rpm.text = state.data.toString()
+                }
+                is ResponseState.Error -> {
+                    Toast.makeText(requireContext(), "Rpm Error: ${state.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
         connectViewModel.connectionStateLiveData.observe(viewLifecycleOwner) { socket ->
             when (socket) {
                 is ResponseState.Success -> {
@@ -68,29 +97,6 @@ class HomeFragment : Fragment() {
                 ResponseState.Loading -> binding.loading.visibility = View.VISIBLE
             }
         }
-
-        viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is ResponseState.Success -> {
-                    binding.liveSpeed.text = state.data.toString()
-                }
-                is ResponseState.Error -> {
-                    Toast.makeText(requireContext(), "Speed Error: ${state.message}", Toast.LENGTH_SHORT).show()
-                }
-
-            }
-        }
-
-        viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is ResponseState.Success -> {
-                    binding.rpm.text = state.data.toString()
-                }
-                is ResponseState.Error -> {
-                    Toast.makeText(requireContext(), "Rpm Error: ${state.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
     }
 
     private fun initializeSocket() {
@@ -99,7 +105,7 @@ class HomeFragment : Fragment() {
         if (bluetoothSocket != null) {
             Toast.makeText(requireContext(), "Socket is connected", Toast.LENGTH_SHORT).show()
             getData(bluetoothSocket)
-            //acceleration()
+            acceleration()
         } else {
             Toast.makeText(requireContext(), "Disconnected", Toast.LENGTH_SHORT).show()
         }
@@ -120,17 +126,13 @@ class HomeFragment : Fragment() {
 
         val sensorEventListener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
-                // Isolate the force of gravity with the low-pass filter.
                 gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0]
                 gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1]
                 gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2]
 
-                // Remove the gravity contribution with the high-pass filter.
                 linearAcceleration[0] = event.values[0] - gravity[0]
                 linearAcceleration[1] = event.values[1] - gravity[1]
                 (event.values[2] - gravity[2]).also { linearAcceleration[2] = it }
-
-                // Calculate the magnitude of acceleration
                 val accelerationMagnitude = sqrt(
                     (
                             linearAcceleration[0]
@@ -140,10 +142,7 @@ class HomeFragment : Fragment() {
                                     + linearAcceleration[2]
                                     * linearAcceleration[2]).toDouble()
                 )
-
-                // Display the magnitude of acceleration
-                val accMagnitudeStr = "Acceleration Magnitude: $accelerationMagnitude"
-                Toast.makeText(requireContext(), accMagnitudeStr, Toast.LENGTH_SHORT).show()
+                binding.acceleration.text = accelerationMagnitude.toString()[0].toString()
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
@@ -166,8 +165,21 @@ class HomeFragment : Fragment() {
             if(speedValues.isEmpty()){
                 Toast.makeText(requireContext(),"Speed values are null",Toast.LENGTH_SHORT).show()
             }else{
-                // Processing speed values and then display the result of rating
                 Toast.makeText(requireContext(),"Processing...",Toast.LENGTH_SHORT).show()
+                endTimeMillis = System.currentTimeMillis()
+                val elapsedTimeMillis = endTimeMillis - startTimeMillis
+                val elapsedTimeSeconds = elapsedTimeMillis / 1000
+                val elapsedTimeMinutes = elapsedTimeSeconds / 60
+
+                val elapsedTimeStr = if (elapsedTimeMinutes > 0) {
+                    "$elapsedTimeMinutes minutes"
+                } else { "$elapsedTimeSeconds seconds" }
+
+                binding.tripTime.text = elapsedTimeStr
+                startTimeMillis = System.currentTimeMillis()
+
+                val myApp = activity?.application as App
+                myApp.bluetoothSocket?.close()
                 speedRating(speedValues)
             }
         }
@@ -193,5 +205,6 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
     }
 }

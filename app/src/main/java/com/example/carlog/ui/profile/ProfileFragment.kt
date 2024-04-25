@@ -1,15 +1,14 @@
 package com.example.carlog.ui.profile
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import com.example.carlog.R
 import com.example.carlog.databinding.FragmentProfileBinding
-
+import com.example.carlog.utils.MySharedPreferences
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -20,7 +19,12 @@ class ProfileFragment : Fragment() {
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         onClicks()
+        getData()
         return binding.root
+    }
+
+    private fun getData() {
+        binding.name.text = MySharedPreferences.getUserName()
     }
 
     private fun onClicks() {

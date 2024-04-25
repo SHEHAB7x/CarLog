@@ -20,7 +20,6 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     val liveSpeed: LiveData<ResponseState<Int>> get() = _liveSpeed
     private val _liveRPM = MutableLiveData<ResponseState<Int>>()
     val liveRPM: LiveData<ResponseState<Int>> get() = _liveRPM
-
     private val _speedValues = mutableListOf<Int>()
     val speedValues: List<Int> get() = _speedValues.toList()
 
@@ -33,7 +32,6 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
                     if (speedState is ResponseState.Success) {
                         _speedValues.add(speedState.data)
                     }
-
                     delay(2000)
                 } catch (e: Exception) {
                     _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("Speed Exception: $it") })
