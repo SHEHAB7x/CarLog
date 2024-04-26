@@ -32,7 +32,7 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
                     if (speedState is ResponseState.Success) {
                         _speedValues.add(speedState.data)
                     }
-                    delay(2000)
+                    delay(1000)
                 } catch (e: Exception) {
                     _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("Speed Exception: $it") })
                 }
@@ -45,7 +45,7 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
             while (isActive){
                 try{
                     _liveRPM.postValue(repo.getRPM(bluetoothSocket))
-                    delay(5000)
+                    delay(2000)
                 }catch (e: Exception){
                     _liveRPM.postValue((e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") }))
                 }

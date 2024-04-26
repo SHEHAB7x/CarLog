@@ -50,11 +50,6 @@ class HomeFragment : Fragment() {
         onClicks()
         initializeSocket()
         observers()
-        startTime()
-    }
-
-    private fun startTime() {
-        startTimeMillis = System.currentTimeMillis()
     }
 
     private fun observers() {
@@ -104,7 +99,6 @@ class HomeFragment : Fragment() {
         val bluetoothSocket = myApp.bluetoothSocket
         if (bluetoothSocket != null) {
             Toast.makeText(requireContext(), "Socket is connected", Toast.LENGTH_SHORT).show()
-            getData(bluetoothSocket)
             acceleration()
         } else {
             Toast.makeText(requireContext(), "Disconnected", Toast.LENGTH_SHORT).show()
@@ -118,6 +112,71 @@ class HomeFragment : Fragment() {
         }else{
             viewModel.getSpeed(bluetoothSocket)
             viewModel.getRPM(bluetoothSocket)
+        }
+    }
+
+
+    private fun onClicks() {
+        binding.btnProfile.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_profileFragment)
+        }
+        binding.btnMessage.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_chatsFragment)
+        }
+        binding.btnEndTrip.setOnClickListener {
+            val speedValues = viewModel.speedValues
+            if(speedValues.isEmpty()){
+                Toast.makeText(requireContext(),"Speed values are null",Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(requireContext(),"Processing...",Toast.LENGTH_SHORT).show()
+                endTimeMillis = System.currentTimeMillis()
+                val elapsedTimeMillis = endTimeMillis - startTimeMillis
+                val elapsedTimeSeconds = elapsedTimeMillis / 1000
+                val elapsedTimeMinutes = elapsedTimeSeconds / 60
+
+                val elapsedTimeStr = if (elapsedTimeMinutes > 0) {
+                    "$elapsedTimeMinutes minutes"
+                } else { "$elapsedTimeSeconds seconds" }
+
+                binding.tripTime.text = elapsedTimeStr
+                startTimeMillis = System.currentTimeMillis()
+
+                val myApp = activity?.application as App
+                myApp.bluetoothSocket?.close()
+                speedRating(speedValues)
+            }
+        }
+        binding.btnStartTrip.setOnClickListener {
+            val myApp = activity?.application as App
+            val bluetoothSocket = myApp.bluetoothSocket
+            if (bluetoothSocket != null) {
+                Toast.makeText(requireContext(), "The trip is Start", Toast.LENGTH_SHORT).show()
+                startTime()
+                getData(bluetoothSocket)
+            } else {
+                Toast.makeText(requireContext(), "Null Socket please Reconnect", Toast.LENGTH_SHORT).show()
+                Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_connectFragment)
+            }
+        }
+    }
+
+    private fun startTime() {
+        startTimeMillis = System.currentTimeMillis()
+    }
+    private fun speedRating(speedValues: List<Int>) {
+        // Find the highest speed in the list
+        val maxSpeed = speedValues.max()
+        // Calculate the percentage increase
+        val percentageIncrease = ((maxSpeed - 20) / 20.0) * 100
+        // Subtract the percentage increase from 100
+        val rateOfSpeed = 100 - percentageIncrease
+        binding.speed.text = rateOfSpeed.toString()
+        if(rateOfSpeed < 50){
+            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.red_circle)
+        }else if(rateOfSpeed > 85){
+            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.green_circle)
+        }else{
+            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.blue_circle)
         }
     }
     private fun acceleration() {
@@ -151,57 +210,6 @@ class HomeFragment : Fragment() {
         }
         sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
     }
-
-    private fun onClicks() {
-        binding.btnProfile.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_profileFragment)
-        }
-        binding.btnMessage.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_chatsFragment)
-        }
-        binding.btnEndTrip.setOnClickListener {
-            val speedValues = viewModel.speedValues
-
-            if(speedValues.isEmpty()){
-                Toast.makeText(requireContext(),"Speed values are null",Toast.LENGTH_SHORT).show()
-            }else{
-                Toast.makeText(requireContext(),"Processing...",Toast.LENGTH_SHORT).show()
-                endTimeMillis = System.currentTimeMillis()
-                val elapsedTimeMillis = endTimeMillis - startTimeMillis
-                val elapsedTimeSeconds = elapsedTimeMillis / 1000
-                val elapsedTimeMinutes = elapsedTimeSeconds / 60
-
-                val elapsedTimeStr = if (elapsedTimeMinutes > 0) {
-                    "$elapsedTimeMinutes minutes"
-                } else { "$elapsedTimeSeconds seconds" }
-
-                binding.tripTime.text = elapsedTimeStr
-                startTimeMillis = System.currentTimeMillis()
-
-                val myApp = activity?.application as App
-                myApp.bluetoothSocket?.close()
-                speedRating(speedValues)
-            }
-        }
-    }
-
-    private fun speedRating(speedValues: List<Int>) {
-        // Find the highest speed in the list
-        val maxSpeed = speedValues.max()
-        // Calculate the percentage increase
-        val percentageIncrease = ((maxSpeed - 20) / 20.0) * 100
-        // Subtract the percentage increase from 100
-        val rateOfSpeed = 100 - percentageIncrease
-        binding.speed.text = rateOfSpeed.toString()
-        if(rateOfSpeed < 50){
-            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.red_circle)
-        }else if(rateOfSpeed > 85){
-            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.green_circle)
-        }else{
-            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.blue_circle)
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
