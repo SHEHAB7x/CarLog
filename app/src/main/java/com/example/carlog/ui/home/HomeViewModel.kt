@@ -23,6 +23,25 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     private val _speedValues = mutableListOf<Int>()
     val speedValues: List<Int> get() = _speedValues.toList()
 
+    fun getData(bluetoothSocket: BluetoothSocket){
+        viewModelScope.launch(Dispatchers.IO){
+            while (isActive){
+                try {
+                    val speedState = repo.getSpeed(bluetoothSocket)
+                    _liveSpeed.postValue(speedState)
+                    if (speedState is ResponseState.Success)
+                        _speedValues.add(speedState.data)
+
+                    delay(1000)
+
+                    _liveRPM.postValue(repo.getRPM(bluetoothSocket))
+                }catch (e: Exception){
+                    _liveRPM.postValue((e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") }))
+                    _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("Speed Exception: $it") })
+                }
+            }
+        }
+    }
     fun getSpeed(bluetoothSocket: BluetoothSocket) {
         viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
@@ -52,5 +71,4 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
             }
         }
     }
-
 }

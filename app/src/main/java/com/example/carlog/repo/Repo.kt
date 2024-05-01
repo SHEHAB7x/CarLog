@@ -43,6 +43,7 @@ class Repo
         if (!rpmResponse.contains(OBD_RPM_RESPONSE)) {
             ResponseState.Error("OBD_ERROR\", \"Invalid response for RPM command: $rpmResponse")
         }
+
         val rpm = parseResponse(rpmResponse)
         return ResponseState.Success(rpm)
     }
@@ -95,10 +96,9 @@ class Repo
             .replace("\r", "")
             .replace("\n", "")
             .replace(">", "")
-
         val dataFields = cleanedResponse.split(" ")
         if (dataFields.size < 4) {
-            return -1
+            return 0
         }
         val hexResult = dataFields[3].replace(">", "")
         return hexResult.toInt(16)
@@ -110,6 +110,7 @@ class Repo
             ResponseState.Success(ArrayList(pairedDevices))
         }
     }
+
     private suspend fun resetDevice(inputStream: InputStream?, outputStream: OutputStream?) {
         if (inputStream == null || outputStream == null) {
             Log.e("INIT_ERROR", "Socket not set")

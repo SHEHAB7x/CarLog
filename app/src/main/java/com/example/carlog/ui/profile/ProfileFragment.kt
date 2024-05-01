@@ -35,4 +35,12 @@ class ProfileFragment : Fragment() {
             Navigation.findNavController(it).navigate(R.id.action_profileFragment_to_chatsFragment)
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 }
+
+

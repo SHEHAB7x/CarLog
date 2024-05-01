@@ -51,7 +51,6 @@ class HomeFragment : Fragment() {
         initializeSocket()
         observers()
     }
-
     private fun observers() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -63,7 +62,6 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-
         viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
@@ -93,7 +91,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
     private fun initializeSocket() {
         val myApp = activity?.application as App
         val bluetoothSocket = myApp.bluetoothSocket
@@ -110,12 +107,11 @@ class HomeFragment : Fragment() {
             Toast.makeText(requireContext(), "Failed to get data, Reconnect", Toast.LENGTH_SHORT).show()
             Navigation.findNavController(binding.root).navigate(R.id.action_homeFragment_to_connectFragment)
         }else{
-            viewModel.getSpeed(bluetoothSocket)
-            viewModel.getRPM(bluetoothSocket)
+            //viewModel.getSpeed(bluetoothSocket)
+            //viewModel.getRPM(bluetoothSocket)
+            viewModel.getData(bluetoothSocket)
         }
     }
-
-
     private fun onClicks() {
         binding.btnProfile.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_homeFragment_to_profileFragment)
@@ -159,7 +155,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
     private fun startTime() {
         startTimeMillis = System.currentTimeMillis()
     }
