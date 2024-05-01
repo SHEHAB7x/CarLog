@@ -36,6 +36,8 @@ class HomeFragment : Fragment() {
     private val alpha = 0.8f
     private var startTimeMillis: Long = 0L
     private var endTimeMillis: Long = 0L
+    private var lastSpeed : Int = 0
+    private var lastRpm : Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,7 +57,13 @@ class HomeFragment : Fragment() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.liveSpeed.text = state.data.toString()
+                    if(state.data == -1 && lastSpeed > 0)
+                        binding.liveSpeed.text = lastSpeed.toString()
+                    else
+                    {
+                        binding.liveSpeed.text = state.data.toString()
+                        lastSpeed = state.data
+                    }
                 }
                 is ResponseState.Error -> {
                     Toast.makeText(requireContext(), "Speed Error: ${state.message}", Toast.LENGTH_SHORT).show()
@@ -65,7 +73,13 @@ class HomeFragment : Fragment() {
         viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.rpm.text = state.data.toString()
+                    if(state.data == -1 && lastRpm > 0)
+                        binding.liveSpeed.text = lastRpm.toString()
+                    else
+                    {
+                        binding.liveSpeed.text = state.data.toString()
+                        lastRpm = state.data
+                    }
                 }
                 is ResponseState.Error -> {
                     Toast.makeText(requireContext(), "Rpm Error: ${state.message}", Toast.LENGTH_SHORT).show()
