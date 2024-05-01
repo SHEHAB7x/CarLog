@@ -138,30 +138,39 @@ class HomeFragment : Fragment() {
             if(speedValues.isEmpty()){
                 Toast.makeText(requireContext(),"Speed values are null",Toast.LENGTH_SHORT).show()
             }else{
+                binding.btnStartTrip.isEnabled = true
+                binding.btnEndTrip.isEnabled = false
+
                 Toast.makeText(requireContext(),"Processing...",Toast.LENGTH_SHORT).show()
                 endTimeMillis = System.currentTimeMillis()
-                val elapsedTimeMillis = endTimeMillis - startTimeMillis
-                val elapsedTimeSeconds = elapsedTimeMillis / 1000
-                val elapsedTimeMinutes = elapsedTimeSeconds / 60
+                val milliSeconds = endTimeMillis - startTimeMillis
 
-                val elapsedTimeStr = if (elapsedTimeMinutes > 0) {
-                    "$elapsedTimeMinutes minutes"
-                } else { "$elapsedTimeSeconds seconds" }
+                val seconds = milliSeconds / 1000
+                val hours = seconds / 3600
+                val minutes = (seconds % 3600) / 60
+                val remainingSeconds = (seconds % 3600) % 60
 
-                binding.tripTime.text = elapsedTimeStr
-                startTimeMillis = System.currentTimeMillis()
+                val tripTime = "$hours : $minutes : $remainingSeconds"
+
+                binding.tripTime.text = tripTime
+
+                val rate = viewModel.getRate()
+                setRate(rate)
 
                 val myApp = activity?.application as App
                 myApp.bluetoothSocket?.close()
-                speedRating(speedValues)
             }
         }
+
         binding.btnStartTrip.setOnClickListener {
             val myApp = activity?.application as App
             val bluetoothSocket = myApp.bluetoothSocket
+
             if (bluetoothSocket != null) {
+                binding.btnStartTrip.isEnabled = false
+                binding.btnEndTrip.isEnabled = true
                 Toast.makeText(requireContext(), "The trip is Start", Toast.LENGTH_SHORT).show()
-                startTime()
+                startTimeMillis = System.currentTimeMillis()
                 getData(bluetoothSocket)
             } else {
                 Toast.makeText(requireContext(), "Null Socket please Reconnect", Toast.LENGTH_SHORT).show()
@@ -169,20 +178,12 @@ class HomeFragment : Fragment() {
             }
         }
     }
-    private fun startTime() {
-        startTimeMillis = System.currentTimeMillis()
-    }
-    private fun speedRating(speedValues: List<Int>) {
-        // Find the highest speed in the list
-        val maxSpeed = speedValues.max()
-        // Calculate the percentage increase
-        val percentageIncrease = ((maxSpeed - 20) / 20.0) * 100
-        // Subtract the percentage increase from 100
-        val rateOfSpeed = 100 - percentageIncrease
-        binding.speed.text = rateOfSpeed.toString()
-        if(rateOfSpeed < 50){
+
+    private fun setRate(rate: Double) {
+        binding.speed.text = rate.toString()
+        if(rate < 50){
             binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.red_circle)
-        }else if(rateOfSpeed > 85){
+        }else if(rate > 85){
             binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.green_circle)
         }else{
             binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.blue_circle)

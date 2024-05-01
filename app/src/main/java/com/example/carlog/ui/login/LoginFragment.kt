@@ -36,7 +36,7 @@ class LoginFragment : Fragment() {
     private fun observers() {
         loginViewModel.loginLiveData.observe(viewLifecycleOwner){ state ->
             when (state) {
-                is ResponseState.Success -> navigateToHome(state.data)
+                is ResponseState.Success -> navigateToConnect(state.data)
                 is ResponseState.Error -> showError(state.message)
                 ResponseState.Loading -> showLoadingIndicator()
             }
@@ -53,7 +53,7 @@ class LoginFragment : Fragment() {
         Log.e("TAG", "showError: $message")
     }
 
-    private fun navigateToHome(user: ModelUser) {
+    private fun navigateToConnect(user: ModelUser) {
         binding.loading.visibility = View.GONE
         cacheUserData(user)
         Navigation.findNavController(binding.root).navigate(R.id.action_loginFragment_to_connectFragment)
@@ -68,9 +68,11 @@ class LoginFragment : Fragment() {
 
     private fun onClicks() {
         binding.btnLogin.setOnClickListener{
-            //validate()
-            Navigation.findNavController(binding.root).navigate(R.id.action_loginFragment_to_connectFragment)
+            validate()
+            //Navigation.findNavController(binding.root).navigate(R.id.action_loginFragment_to_connectFragment)
         }
+
+
     }
 
     private fun validate() {
