@@ -34,7 +34,7 @@
         android:id="@+id/tripTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="40 min"
+        android:text="0 : 0 : 0"
         android:textColor="@color/white"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/textView2"
