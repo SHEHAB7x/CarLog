@@ -98,7 +98,7 @@ class Repo
             .replace(">", "")
         val dataFields = cleanedResponse.split(" ")
         if (dataFields.size < 4) {
-            return 0
+            return -1
         }
         val hexResult = dataFields[3].replace(">", "")
         return hexResult.toInt(16)

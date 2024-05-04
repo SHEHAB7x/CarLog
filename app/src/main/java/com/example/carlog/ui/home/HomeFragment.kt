@@ -36,6 +36,8 @@ class HomeFragment : Fragment() {
     private val alpha = 0.8f
     private var startTimeMillis: Long = 0L
     private var endTimeMillis: Long = 0L
+    private var lastSpeed : Int = 0
+    private var lastRpm : Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,7 +57,13 @@ class HomeFragment : Fragment() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.liveSpeed.text = state.data.toString()
+                    if(state.data == -1 && lastSpeed > 0)
+                        binding.liveSpeed.text = lastSpeed.toString()
+                    else
+                    {
+                        binding.liveSpeed.text = state.data.toString()
+                        lastSpeed = state.data
+                    }
                 }
                 is ResponseState.Error -> {
                     Toast.makeText(requireContext(), "Speed Error: ${state.message}", Toast.LENGTH_SHORT).show()
@@ -65,7 +73,13 @@ class HomeFragment : Fragment() {
         viewModel.liveRPM.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    binding.rpm.text = state.data.toString()
+                    if(state.data == -1 && lastRpm > 0)
+                        binding.liveSpeed.text = lastRpm.toString()
+                    else
+                    {
+                        binding.liveSpeed.text = state.data.toString()
+                        lastRpm = state.data
+                    }
                 }
                 is ResponseState.Error -> {
                     Toast.makeText(requireContext(), "Rpm Error: ${state.message}", Toast.LENGTH_SHORT).show()
@@ -164,20 +178,18 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
     private fun setRate(rate: Double) {
         binding.speed.text = rate.toString()
-        if (rate < 50) {
-            binding.speed.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.red_circle)
-        } else if (rate > 85) {
-            binding.speed.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.green_circle)
-        } else {
-            binding.speed.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.blue_circle)
+        if(rate < 50){
+            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.red_circle)
+        }else if(rate > 85){
+            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.green_circle)
+        }else{
+            binding.speed.background = ContextCompat.getDrawable(requireContext(), R.drawable.blue_circle)
         }
     }
-        private fun acceleration() {
+    private fun acceleration() {
         val sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
