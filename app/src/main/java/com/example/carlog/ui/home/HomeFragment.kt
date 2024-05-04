@@ -57,13 +57,7 @@ class HomeFragment : Fragment() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> {
-                    if(state.data == -1 && lastSpeed > 0)
-                        binding.liveSpeed.text = lastSpeed.toString()
-                    else
-                    {
-                        binding.liveSpeed.text = state.data.toString()
-                        lastSpeed = state.data
-                    }
+                    binding.liveSpeed.text = state.data.toString()
                 }
                 is ResponseState.Error -> {
                     Toast.makeText(requireContext(), "Speed Error: ${state.message}", Toast.LENGTH_SHORT).show()
