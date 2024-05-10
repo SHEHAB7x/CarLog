@@ -199,7 +199,7 @@ class HomeFragment : Fragment() {
                                     + linearAcceleration[2]
                                     * linearAcceleration[2]).toDouble()
                 )
-                binding.acceleration.text = accelerationMagnitude.toString()[0].toString()
+                //binding.acceleration.text = accelerationMagnitude.toString()[0].toString()
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {

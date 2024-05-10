@@ -7,24 +7,21 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import com.example.carlog.R
 import com.example.carlog.adapters.AdapterRecyclerDevices
 import com.example.carlog.databinding.FragmentConnectBinding
 import com.example.carlog.network.ResponseState
 import com.example.carlog.utils.App
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class ConnectFragment : Fragment() {
@@ -58,7 +55,7 @@ class ConnectFragment : Fragment() {
             devices.observe(viewLifecycleOwner){
                 when(it){
                     is ResponseState.Success ->{
-                        Toast.makeText(requireContext(),"Success " + it.data.size.toString(),Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(requireContext(),"Success " + it.data.size.toString(),Toast.LENGTH_SHORT).show()
                         binding.loading.visibility = View.GONE
                         adapterRecyclerDevices.list = it.data
                         binding.recyclerDevices.adapter = adapterRecyclerDevices

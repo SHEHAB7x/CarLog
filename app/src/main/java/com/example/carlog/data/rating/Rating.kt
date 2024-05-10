@@ -5,7 +5,7 @@ import kotlin.math.max
 
 class Rating(){
     private companion object {
-        const val SPEED_LIMIT = 15
+        const val SPEED_LIMIT = 20
         const val MIN_EVENT_DURATION = 3
         const val MAX_GAP_BETWEEN_EVENTS = 5
     }
@@ -56,10 +56,14 @@ class Rating(){
                 inEvent = false
             }
         }
-        val tripRate = events.map { event ->
-            (((event.maxSpeed - SPEED_LIMIT) / SPEED_LIMIT) * 100.0) * event.duration
-        }.average()
 
-        return tripRate
+        val tripRates = events.map { event ->
+            event.maxSpeed * event.duration
+        }
+
+        val totalTripRate = tripRates.sum()
+        val overallTripRate = totalTripRate / ((dataList.maxOf { it.speed }) * dataList.size).toDouble()
+
+        return overallTripRate
     }
 }
