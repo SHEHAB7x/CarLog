@@ -47,9 +47,17 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
         }
     }
 
-    fun getRate() : Double{
-        return rating.rating(speedValues)
+    fun getSpeedRate() : Double{
+        return rating.speedRating(speedValues)
     }
+    fun getAccelerationRate() : Double{
+        return rating.accelerationRating(speedValues)
+    }
+
+    fun getBreakingRate() : Double{
+        return rating.breakingRate(speedValues)
+    }
+
 
     fun getSpeed(bluetoothSocket: BluetoothSocket) {
         val startTime = System.currentTimeMillis()

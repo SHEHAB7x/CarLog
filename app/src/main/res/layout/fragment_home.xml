@@ -111,16 +111,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:text="@string/deceleration"
+        android:text="@string/breaking"
         android:textColor="#888888"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/deceleration"
-        app:layout_constraintEnd_toEndOf="@+id/deceleration"
-        app:layout_constraintStart_toStartOf="@+id/deceleration" />
+        app:layout_constraintBottom_toTopOf="@+id/breaking"
+        app:layout_constraintEnd_toEndOf="@+id/breaking"
+        app:layout_constraintStart_toStartOf="@+id/breaking" />
 
 
     <TextView
-        android:id="@+id/deceleration"
+        android:id="@+id/breaking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -158,7 +158,7 @@
         android:textColor="@color/white"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/deceleration" />
+        app:layout_constraintTop_toBottomOf="@+id/breaking" />
 
     <TextView
         android:layout_width="wrap_content"

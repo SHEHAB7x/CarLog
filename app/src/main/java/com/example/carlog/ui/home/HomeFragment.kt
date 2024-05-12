@@ -1,11 +1,6 @@
 package com.example.carlog.ui.home
 
 import android.bluetooth.BluetoothSocket
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +16,6 @@ import com.example.carlog.network.ResponseState
 import com.example.carlog.ui.connect.ConnectViewModel
 import com.example.carlog.utils.App
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.math.sqrt
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -96,7 +90,6 @@ class HomeFragment : Fragment() {
         val bluetoothSocket = myApp.bluetoothSocket
         if (bluetoothSocket != null) {
             Toast.makeText(requireContext(), "Socket is connected", Toast.LENGTH_SHORT).show()
-            acceleration()
         } else {
             Toast.makeText(requireContext(), "Disconnected", Toast.LENGTH_SHORT).show()
         }
@@ -137,11 +130,9 @@ class HomeFragment : Fragment() {
                 val remainingSeconds = (seconds % 3600) % 60
 
                 val tripTime = "$hours : $minutes : $remainingSeconds"
-
                 binding.tripTime.text = tripTime
 
-                val rate = viewModel.getRate()
-                setRate(rate)
+                getRate()
 
                 val myApp = activity?.application as App
                 myApp.bluetoothSocket?.close()
@@ -164,50 +155,35 @@ class HomeFragment : Fragment() {
             }
         }
     }
-    private fun setRate(rate: Double) {
-        binding.speed.text = rate.toString()
-        if (rate < 50) {
-            binding.speed.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.red_circle)
-        } else if (rate > 85) {
-            binding.speed.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.green_circle)
-        } else {
-            binding.speed.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.blue_circle)
-        }
+
+    private fun getRate() {
+        val speedRate = viewModel.getSpeedRate()
+        val accelerationRate = viewModel.getAccelerationRate()
+        val breakRate = viewModel.getBreakingRate()
+        setRate(speedRate, accelerationRate, breakRate)
     }
-        private fun acceleration() {
-        val sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
-        val sensorEventListener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent) {
-                gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0]
-                gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1]
-                gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2]
+    private fun setRate(speedRate: Double, accelerationRate: Double, breakRate: Double) {
+        binding.speed.text = speedRate.toString()
+        binding.acceleration.text = accelerationRate.toString()
+        binding.breaking.text = breakRate.toString()
 
-                linearAcceleration[0] = event.values[0] - gravity[0]
-                linearAcceleration[1] = event.values[1] - gravity[1]
-                (event.values[2] - gravity[2]).also { linearAcceleration[2] = it }
-                val accelerationMagnitude = sqrt(
-                    (
-                            linearAcceleration[0]
-                                    * linearAcceleration[0]
-                                    + linearAcceleration[1]
-                                    * linearAcceleration[1]
-                                    + linearAcceleration[2]
-                                    * linearAcceleration[2]).toDouble()
-                )
-                //binding.acceleration.text = accelerationMagnitude.toString()[0].toString()
-            }
-
-            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-                // Optional: Handle accuracy changes if needed
-            }
-        }
-        sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+        setRateBackground(binding.speed, speedRate)
+        setRateBackground(binding.acceleration, accelerationRate)
+        setRateBackground(binding.breaking, breakRate)
     }
+
+    private fun setRateBackground(view: View, rate: Double) {
+        val backgroundResId = when {
+            rate < 50 -> R.drawable.red_circle
+            rate > 85 -> R.drawable.green_circle
+            else -> R.drawable.blue_circle
+        }
+        view.background = ContextCompat.getDrawable(requireContext(), backgroundResId)
+    }
+
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
