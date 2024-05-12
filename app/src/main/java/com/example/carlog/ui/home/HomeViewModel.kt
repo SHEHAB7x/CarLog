@@ -25,6 +25,7 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     val speedValues: List<SpeedValue> get() = _speedValues.toList()
     data class SpeedValue(var time: Long?, var speed: Int)
     private val rating : Rating = Rating()
+    private var idlingTime = 0L
 
     fun getData(bluetoothSocket: BluetoothSocket){
         val startTime = System.currentTimeMillis()
@@ -34,7 +35,11 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
                     val speedState = repo.getSpeed(bluetoothSocket)
                     _liveSpeed.postValue(speedState)
                     if (speedState is ResponseState.Success)
+                    {
                         _speedValues.add(SpeedValue(((System.currentTimeMillis() - startTime)/1000),speedState.data))
+                        if (speedState.data == 0)
+                            idlingTime++
+                    }
 
                     delay(1000)
 
@@ -56,6 +61,9 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
 
     fun getBreakingRate() : Double{
         return rating.breakingRate(speedValues)
+    }
+    fun getIdlingTime() : Long{
+        return idlingTime
     }
 
 

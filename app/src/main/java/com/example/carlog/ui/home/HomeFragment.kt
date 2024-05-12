@@ -16,6 +16,7 @@ import com.example.carlog.network.ResponseState
 import com.example.carlog.ui.connect.ConnectViewModel
 import com.example.carlog.utils.App
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -25,9 +26,6 @@ class HomeFragment : Fragment() {
 
     private val connectViewModel: ConnectViewModel by viewModels()
 
-    private val gravity = FloatArray(3)
-    private val linearAcceleration = FloatArray(3)
-    private val alpha = 0.8f
     private var startTimeMillis: Long = 0L
     private var endTimeMillis: Long = 0L
 
@@ -100,8 +98,6 @@ class HomeFragment : Fragment() {
             Toast.makeText(requireContext(), "Failed to get data, Reconnect", Toast.LENGTH_SHORT).show()
             Navigation.findNavController(binding.root).navigate(R.id.action_homeFragment_to_connectFragment)
         }else{
-            //viewModel.getSpeed(bluetoothSocket)
-            //viewModel.getRPM(bluetoothSocket)
             viewModel.getData(bluetoothSocket)
         }
     }
@@ -119,21 +115,8 @@ class HomeFragment : Fragment() {
             }else{
                 binding.btnStartTrip.isEnabled = true
                 binding.btnEndTrip.isEnabled = false
-
                 Toast.makeText(requireContext(),"Processing...",Toast.LENGTH_SHORT).show()
-                endTimeMillis = System.currentTimeMillis()
-                val milliSeconds = endTimeMillis - startTimeMillis
-
-                val seconds = milliSeconds / 1000
-                val hours = seconds / 3600
-                val minutes = (seconds % 3600) / 60
-                val remainingSeconds = (seconds % 3600) % 60
-
-                val tripTime = "$hours : $minutes : $remainingSeconds"
-                binding.tripTime.text = tripTime
-
                 getRate()
-
                 val myApp = activity?.application as App
                 myApp.bluetoothSocket?.close()
             }
@@ -156,17 +139,37 @@ class HomeFragment : Fragment() {
         }
     }
 
+
     private fun getRate() {
         val speedRate = viewModel.getSpeedRate()
         val accelerationRate = viewModel.getAccelerationRate()
         val breakRate = viewModel.getBreakingRate()
-        setRate(speedRate, accelerationRate, breakRate)
+        val idlingTime = calculateTime(viewModel.getIdlingTime())
+        setRate(speedRate, accelerationRate, breakRate, idlingTime)
     }
 
-    private fun setRate(speedRate: Double, accelerationRate: Double, breakRate: Double) {
+    private fun calculateTime(seconds: Long) : String{
+        val hours = seconds / 3600
+        val minutes = (seconds % 3600) / 60
+        val remainingSeconds = (seconds % 3600) % 60
+        return String.format(Locale.getDefault(), "%02d : %02d : %02d", hours, minutes, remainingSeconds)
+    }
+
+    private fun setRate(
+        speedRate: Double,
+        accelerationRate: Double,
+        breakRate: Double,
+        idlingTime: String
+    ) {
+        endTimeMillis = System.currentTimeMillis()
+        val milliSeconds = endTimeMillis - startTimeMillis
+        val tripTime = calculateTime(milliSeconds/1000)
+
+        binding.tripTime.text = tripTime
         binding.speed.text = speedRate.toString()
         binding.acceleration.text = accelerationRate.toString()
         binding.breaking.text = breakRate.toString()
+        binding.idlingTime.text = idlingTime
 
         setRateBackground(binding.speed, speedRate)
         setRateBackground(binding.acceleration, accelerationRate)
@@ -181,8 +184,6 @@ class HomeFragment : Fragment() {
         }
         view.background = ContextCompat.getDrawable(requireContext(), backgroundResId)
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()
