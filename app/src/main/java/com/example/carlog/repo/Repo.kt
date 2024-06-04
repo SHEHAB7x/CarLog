@@ -8,6 +8,7 @@ import com.example.carlog.data.ModelUser
 import com.example.carlog.network.LoginRequestBody
 import com.example.carlog.network.ResponseState
 import com.example.carlog.network.RetrofitService
+import com.example.carlog.network.TripRequestBody
 import com.example.carlog.utils.Const
 import com.example.carlog.utils.Const.Companion.OBD_RPM_RESPONSE
 import com.example.carlog.utils.Const.Companion.OBD_SPEED
@@ -49,15 +50,54 @@ class Repo
     }
 
     override suspend fun login(email: String, password: String): ResponseState<ModelUser> {
-        val response = retrofitService.loginUser(LoginRequestBody(email,password))
-        return if(response.statusCode.statusCode == 200){
+        val response = retrofitService.loginUser(LoginRequestBody(email, password))
+        return if (response.statusCode.statusCode == 200) {
             ResponseState.Success(response)
-        }else{
+        } else {
             ResponseState.Error("error")
         }
     }
 
-    private suspend fun sendCommand(inputStream: InputStream, outputStream: OutputStream, command: String): String {
+    override suspend fun postTrip(
+        date: String,
+        acceleration: Int,
+        deceleration: Int,
+        tripTime: String,
+        idling: Int,
+        overSpeedTimes: Int,
+        tripRate: Int,
+        maxSpeed: Int,
+        maxAcceleration: Int,
+        maxBreaking: Int,
+        maxIdling: Int,
+    ): ResponseState<Int> {
+        val response = retrofitService.postTrip(
+            TripRequestBody(
+                date,
+                acceleration,
+                deceleration,
+                tripTime,
+                idling,
+                overSpeedTimes,
+                tripRate,
+                maxSpeed,
+                maxAcceleration,
+                maxBreaking,
+                maxIdling
+            )
+        )
+        return if (response == 200) {
+            ResponseState.Success(200)
+        } else {
+            ResponseState.Error("0")
+        }
+    }
+
+    private suspend fun sendCommand(
+        inputStream: InputStream,
+        outputStream: OutputStream,
+        command: String
+    ): String {
         val sendData = command.toByteArray()
 
         withContext(Dispatchers.IO) {
@@ -126,7 +166,7 @@ class Repo
         bluetoothDevice.createRfcommSocketToServiceRecord(uuid).apply {
             connect()
             return if (isConnected) {
-                resetDevice(this.inputStream,this.outputStream)
+                resetDevice(this.inputStream, this.outputStream)
                 ResponseState.Success(this)
             } else {
                 ResponseState.Error("Connection Failed")

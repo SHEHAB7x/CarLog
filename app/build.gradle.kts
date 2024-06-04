@@ -58,6 +58,7 @@ dependencies {
 
     val okhttp3Version = "4.5.0"
     val retrofitVersion = "2.9.0"
+
     //retrofit
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.okhttp3:logging-interceptor:$okhttp3Version")
