@@ -49,8 +49,8 @@ class HomeFragment : Fragment() {
     private fun setupObservers() {
         viewModel.liveSpeed.observe(viewLifecycleOwner) { handleSpeedState(it) }
         viewModel.liveRPM.observe(viewLifecycleOwner) { handleRPMState(it) }
-        viewModel.postTripLiveData.observe(viewLifecycleOwner){
-            when(it){
+        viewModel.postTripLiveData.observe(viewLifecycleOwner) {
+            when (it) {
                 is ResponseState.Success -> showToast("Trip Saved")
                 is ResponseState.Error -> showToast("Error: ${it.message}")
             }
@@ -188,7 +188,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun getOverSpeedTimes(): Int {
-        var count: Int = 0
+        var count = 0
         val list = viewModel.speedValues
 
         for (i in list.indices) {
@@ -226,17 +226,28 @@ class HomeFragment : Fragment() {
         endTimeMillis = System.currentTimeMillis()
         val tripTime = calculateTime((endTimeMillis - startTimeMillis) / 1000)
 
+
+
         binding.tripTime.text = tripTime
-        binding.speed.text = formatRate(speedRate)
-        binding.acceleration.text = formatRate(accelerationRate)
-        binding.breaking.text = formatRate(breakRate)
+
+        binding.speed.text = speedRate.toInt().toString()
+        binding.acceleration.text = accelerationRate.toInt().toString()
+        /*var breakRateInt = breakRate.toInt()
+        if (breakRateInt < 0) {
+            breakRateInt *= -1
+            if(breakRateInt > 100)
+                breakRateInt = 99
+        } else if (breakRateInt > 100) {
+            breakRateInt = 99
+        }*/
+
+        var breakRateInt = breakRate.toInt().coerceIn(0, 99)
+        binding.breaking.text = breakRateInt.toString()
 
         setRateBackground(binding.speed, speedRate)
         setRateBackground(binding.acceleration, accelerationRate)
         setRateBackground(binding.breaking, breakRate)
     }
-
-    private fun formatRate(rate: Double) = String.format("%.2f", rate)
 
     private fun setRateBackground(view: View, rate: Double) {
         val backgroundResId = when {

@@ -68,8 +68,7 @@ class LoginFragment : Fragment() {
 
     private fun onClicks() {
         binding.btnLogin.setOnClickListener{
-            //validate()
-            Navigation.findNavController(binding.root).navigate(R.id.action_loginFragment_to_connectFragment)
+            validate()
         }
     }
 

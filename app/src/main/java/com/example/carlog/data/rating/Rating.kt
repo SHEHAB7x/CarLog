@@ -45,7 +45,7 @@ class Rating {
         val totalTripRate = tripRates.sum()
         val maxSpeed = dataList.maxOfOrNull { it.speed } ?: 1
 
-        return totalTripRate / (maxSpeed * dataList.size).toDouble()
+        return (totalTripRate / (maxSpeed * dataList.size).toDouble())*100
     }
 
     private fun handleEventEnd(dataList: List<HomeViewModel.SpeedValue>, index: Int) {

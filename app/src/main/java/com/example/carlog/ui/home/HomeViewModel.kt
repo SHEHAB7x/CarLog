@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
                         )
                         if (speedState.data == 0) {
                             count++
-                            if (count == 120) {
+                            if (count == 10) {
                                 idlingTime++
                                 count = 0
                             }
