@@ -13,16 +13,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
-    private var _loginLiveData = MutableLiveData<ResponseState<ModelUser>>()
-    val loginLiveData : LiveData<ResponseState<ModelUser>> = _loginLiveData
+    private val _loginLiveData = MutableLiveData<ResponseState<ModelUser>>()
+    val loginLiveData: LiveData<ResponseState<ModelUser>> get() = _loginLiveData
 
     fun loginUser(email: String, password: String) {
         _loginLiveData.value = ResponseState.Loading
         viewModelScope.launch {
             try {
-                _loginLiveData.postValue(repo.login(email,password))
+                _loginLiveData.postValue(repo.login(email, password))
             } catch (e: Exception) {
-                _loginLiveData.value = e.localizedMessage?.let { ResponseState.Error(it) }
+                _loginLiveData.value = ResponseState.Error(e.localizedMessage ?: "Unknown error")
             }
         }
     }

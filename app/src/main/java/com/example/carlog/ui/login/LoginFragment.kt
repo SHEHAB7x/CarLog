@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.carlog.R
 import com.example.carlog.data.ModelUser
 import com.example.carlog.databinding.FragmentLoginBinding
@@ -18,10 +18,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
-    private var _binding : FragmentLoginBinding? = null
+    private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
     private val loginViewModel: LoginViewModel by viewModels()
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +33,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun observers() {
-        loginViewModel.loginLiveData.observe(viewLifecycleOwner){ state ->
+        loginViewModel.loginLiveData.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResponseState.Success -> navigateToHome(state.data)
                 is ResponseState.Error -> showError(state.message)
@@ -49,25 +48,25 @@ class LoginFragment : Fragment() {
 
     private fun showError(message: String) {
         binding.loading.visibility = View.GONE
-        Toast.makeText(requireContext(),"Error: $message", Toast.LENGTH_SHORT).show()
-        Log.e("TAG", "showError: $message")
+        Toast.makeText(requireContext(), "Error: $message", Toast.LENGTH_SHORT).show()
+        Log.e("LoginFragment", "showError: $message")
     }
 
     private fun navigateToHome(user: ModelUser) {
         binding.loading.visibility = View.GONE
         cacheUserData(user)
-        Navigation.findNavController(binding.root).navigate(R.id.action_loginFragment_to_connectFragment)
+        findNavController().navigate(R.id.action_loginFragment_to_connectFragment)
     }
 
     private fun cacheUserData(user: ModelUser) {
         MySharedPreferences.setUserEmail(user.userEmail)
         MySharedPreferences.setUserId(user.userID)
-        MySharedPreferences.setUserName(user.firstName + " " + user.lastName)
-        MySharedPreferences.setUserTOKEN(user.token)
+        MySharedPreferences.setUserName("${user.firstName} ${user.lastName}")
+        MySharedPreferences.setUserToken(user.token)
     }
 
     private fun onClicks() {
-        binding.btnLogin.setOnClickListener{
+        binding.btnLogin.setOnClickListener {
             validate()
         }
     }
@@ -75,13 +74,15 @@ class LoginFragment : Fragment() {
     private fun validate() {
         val email = binding.email.text.toString()
         val password = binding.password.text.toString()
-        if (email.isEmpty())
-            Toast.makeText(requireContext(),"Username require!", Toast.LENGTH_SHORT).show()
-        else if (password.isEmpty())
-            Toast.makeText(requireContext(),"Password require!", Toast.LENGTH_SHORT).show()
-        else {
-            loginViewModel.loginUser(email, password)
+        when {
+            email.isEmpty() -> Toast.makeText(requireContext(), "Username required!", Toast.LENGTH_SHORT).show()
+            password.isEmpty() -> Toast.makeText(requireContext(), "Password required!", Toast.LENGTH_SHORT).show()
+            else -> loginViewModel.loginUser(email, password)
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
