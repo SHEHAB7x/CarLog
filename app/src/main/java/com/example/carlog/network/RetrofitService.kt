@@ -1,7 +1,9 @@
 package com.example.carlog.network
 
+import com.example.carlog.data.ModelAllTrips
 import com.example.carlog.data.ModelUser
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface RetrofitService {
@@ -10,6 +12,9 @@ interface RetrofitService {
 
     @POST("Trip")
     suspend fun postTrip(@Body body: TripRequestBody): Int
+
+    @GET("Trip")
+    suspend fun getAllTrips() : ModelAllTrips
 }
 
 data class LoginRequestBody(

@@ -232,14 +232,6 @@ class HomeFragment : Fragment() {
 
         binding.speed.text = speedRate.toInt().toString()
         binding.acceleration.text = accelerationRate.toInt().toString()
-        /*var breakRateInt = breakRate.toInt()
-        if (breakRateInt < 0) {
-            breakRateInt *= -1
-            if(breakRateInt > 100)
-                breakRateInt = 99
-        } else if (breakRateInt > 100) {
-            breakRateInt = 99
-        }*/
 
         var breakRateInt = breakRate.toInt().coerceIn(0, 99)
         binding.breaking.text = breakRateInt.toString()

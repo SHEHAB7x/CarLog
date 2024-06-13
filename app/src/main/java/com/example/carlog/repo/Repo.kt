@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
+import com.example.carlog.data.ModelAllTrips
 import com.example.carlog.data.ModelUser
 import com.example.carlog.network.LoginRequestBody
 import com.example.carlog.network.ResponseState
@@ -89,6 +90,15 @@ class Repo
         return if (response == 200) {
             ResponseState.Success(200)
         } else {
+            ResponseState.Error("0")
+        }
+    }
+
+    override suspend fun getAllTrips(): ResponseState<ModelAllTrips> {
+        val response = retrofitService.getAllTrips()
+        return if(response.statuscode.statusCode == 200){
+            ResponseState.Success(response)
+        }else{
             ResponseState.Error("0")
         }
     }

@@ -63,6 +63,7 @@ class LoginFragment : Fragment() {
         MySharedPreferences.setUserId(user.userID)
         MySharedPreferences.setUserName("${user.firstName} ${user.lastName}")
         MySharedPreferences.setUserToken(user.token)
+        MySharedPreferences.setUserAddress(user.address)
     }
 
     private fun onClicks() {

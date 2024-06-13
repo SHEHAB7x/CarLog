@@ -1,6 +1,8 @@
 package com.example.carlog.ui.profile
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +27,7 @@ class ProfileFragment : Fragment() {
 
     private fun getData() {
         binding.name.text = MySharedPreferences.getUserName()
+        binding.userAddress.text = MySharedPreferences.getUserAddress()
     }
 
     private fun onClicks() {
@@ -34,6 +37,18 @@ class ProfileFragment : Fragment() {
         binding.btnMessage.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_profileFragment_to_chatsFragment)
         }
+        binding.historyTextview.setOnClickListener{
+            Navigation.findNavController(it).navigate(R.id.action_profileFragment_to_historyFragment)
+        }
+        binding.btnLogout.setOnClickListener{
+            binding.loading.visibility = View.VISIBLE
+            Handler(Looper.getMainLooper()).postDelayed({
+                MySharedPreferences.clearUserData()
+                Navigation.findNavController(it).navigate(R.id.action_profileFragment_to_loginFragment)
+                binding.loading.visibility = View.GONE
+            }, 2000)
+
+        }
     }
 
     override fun onDestroy() {
@@ -42,5 +57,3 @@ class ProfileFragment : Fragment() {
     }
 
 }
-
-

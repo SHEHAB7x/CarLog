@@ -3,6 +3,7 @@ package com.example.carlog.repo
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import com.example.carlog.data.ModelAllTrips
 import com.example.carlog.data.ModelUser
 import com.example.carlog.network.ResponseState
 
@@ -25,4 +26,6 @@ interface IRepo {
         maxBreaking: Int,
         maxIdling: Int,
     ): ResponseState<Int>
+
+    suspend fun getAllTrips(): ResponseState<ModelAllTrips>?
 }
