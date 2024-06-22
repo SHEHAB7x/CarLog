@@ -37,6 +37,9 @@ class ProfileFragment : Fragment() {
         binding.historyTextview.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_profileFragment_to_historyFragment)
         }
+        binding.btnTerms.setOnClickListener{
+            Navigation.findNavController(it).navigate(R.id.action_profileFragment_to_termsFragment)
+        }
     }
 
     override fun onDestroy() {

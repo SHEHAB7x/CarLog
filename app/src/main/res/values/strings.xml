@@ -13,6 +13,16 @@
     <string name="start_trip">Start Trip</string>
     <string name="excessive_idling">Excessive Idling</string>
     <string name="terms_of_use">Terms of Use</string>
+    <string name="steps">
+        1- Turn on Bluetooth.\n\n
+        2- Start the car and connect the OBD device. \n\n
+        3- Open the app. \n\n
+        4- Log in using the supervisor-provided account. \n\n
+        5- Select the OBD device from the list. \n\n
+        6- Press the start button before driving. \n\n
+        7- Press the end button when you finish your trip. \n\n
+        8- To check your rating, go to Profile > History. \n\n
+    </string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="chats">Chats</string>
     <string name="breaking">Breaking</string>
