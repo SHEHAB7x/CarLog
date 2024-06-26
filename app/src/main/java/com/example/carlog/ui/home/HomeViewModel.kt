@@ -11,6 +11,7 @@ import com.example.carlog.network.ResponseState
 import com.example.carlog.repo.Repo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -34,9 +35,11 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     private val rating: Rating = Rating()
     private var idlingTime = 0L
 
+    private var fetchJob: Job? = null
+
     fun getData(bluetoothSocket: BluetoothSocket) {
         val startTime = System.currentTimeMillis()
-        viewModelScope.launch(Dispatchers.IO) {
+        fetchJob = viewModelScope.launch(Dispatchers.IO) {
             var count = 0
             while (isActive) {
                 try {
@@ -69,7 +72,6 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
             }
         }
     }
-
 
     fun postTrip(
         date: String,
@@ -129,43 +131,34 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
 
     fun getAllMax(){
         val maxSpeed = speedValues.maxByOrNull { it.speed }?.speed
-
     }
 
-
-    fun getSpeed(bluetoothSocket: BluetoothSocket) {
+    // Simulated data fetching for testing
+    fun startSimulatedDataFetching() {
         val startTime = System.currentTimeMillis()
-        viewModelScope.launch(Dispatchers.IO) {
+        fetchJob = viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
                 try {
-                    val speedState = repo.getSpeed(bluetoothSocket)
+                    val randomSpeed = (0..90).random()
+                    val speedState = ResponseState.Success(randomSpeed)
                     _liveSpeed.postValue(speedState)
-                    if (speedState is ResponseState.Success) {
-                        _speedValues.add(
-                            SpeedValue(
-                                ((System.currentTimeMillis() - startTime) / 1000),
-                                speedState.data
-                            )
-                        )
-                    }
+                    _speedValues.add(SpeedValue((System.currentTimeMillis() - startTime) / 1000, randomSpeed))
+
+                    val randomRPM = (0..100).random()
+                    _liveRPM.postValue(ResponseState.Success(randomRPM))
+
                     delay(1000)
                 } catch (e: Exception) {
+                    _liveRPM.postValue((e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") }))
                     _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("Speed Exception: $it") })
                 }
             }
         }
     }
 
-    fun getRPM(bluetoothSocket: BluetoothSocket) {
-        viewModelScope.launch {
-            while (isActive) {
-                try {
-                    _liveRPM.postValue(repo.getRPM(bluetoothSocket))
-                    delay(2000)
-                } catch (e: Exception) {
-                    _liveRPM.postValue((e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") }))
-                }
-            }
-        }
+    // Stop simulated data fetching
+    fun stopSimulatedDataFetching() {
+        fetchJob?.cancel()
+        fetchJob = null
     }
 }

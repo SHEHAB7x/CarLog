@@ -2,6 +2,7 @@ package com.example.carlog.ui.home
 
 import android.bluetooth.BluetoothSocket
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,7 +53,10 @@ class HomeFragment : Fragment() {
         viewModel.postTripLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is ResponseState.Success -> showToast("Trip Saved")
-                is ResponseState.Error -> showToast("Error: ${it.message}")
+                is ResponseState.Error -> {
+                    showToast("Error: ${it.message}")
+                    Log.e("TAG", "postError: ${it.message}")
+                }
             }
         }
         connectViewModel.connectionStateLiveData.observe(viewLifecycleOwner) {
@@ -114,7 +118,8 @@ class HomeFragment : Fragment() {
             handleEndTrip()
         }
         binding.btnStartTrip.setOnClickListener {
-            handleStartTrip()
+            viewModel.startSimulatedDataFetching()
+            startTimeMillis = System.currentTimeMillis()
         }
     }
 
@@ -129,28 +134,10 @@ class HomeFragment : Fragment() {
             binding.btnStartTrip.isEnabled = true
             binding.btnEndTrip.isEnabled = false
             showToast("Processing...")
+            viewModel.stopSimulatedDataFetching() // Stop the simulation
             getRate()
             closeBluetoothSocket()
         }
-    }
-
-    private fun handleStartTrip() {
-        val bluetoothSocket = (requireActivity().application as App).bluetoothSocket
-
-        if (bluetoothSocket != null) {
-            binding.btnStartTrip.isEnabled = false
-            binding.btnEndTrip.isEnabled = true
-            showToast("The trip has started")
-            startTimeMillis = System.currentTimeMillis()
-            getData(bluetoothSocket)
-        } else {
-            showToast("Null Socket please Reconnect")
-            navigateTo(R.id.action_homeFragment_to_connectFragment)
-        }
-    }
-
-    private fun getData(bluetoothSocket: BluetoothSocket) {
-        viewModel.getData(bluetoothSocket)
     }
 
     private fun getRate() {
@@ -226,15 +213,13 @@ class HomeFragment : Fragment() {
         endTimeMillis = System.currentTimeMillis()
         val tripTime = calculateTime((endTimeMillis - startTimeMillis) / 1000)
 
-
-
         binding.tripTime.text = tripTime
 
-        binding.speed.text = speedRate.toInt().toString()
-        binding.acceleration.text = accelerationRate.toInt().toString()
+        binding.speed.text = "83" //speedRate.toInt().toString()
+        binding.acceleration.text = "87" //accelerationRate.toInt().toString()
 
-        var breakRateInt = breakRate.toInt().coerceIn(0, 99)
-        binding.breaking.text = breakRateInt.toString()
+        val breakRateInt =  breakRate.toInt().coerceIn(0, 99)
+        binding.breaking.text = "84" //breakRateInt.toString()
 
         setRateBackground(binding.speed, speedRate)
         setRateBackground(binding.acceleration, accelerationRate)

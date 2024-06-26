@@ -6,7 +6,7 @@ import kotlin.math.max
 
 class Rating {
     companion object {
-        const val SPEED_LIMIT = 20
+        const val SPEED_LIMIT = 80
         private const val MIN_EVENT_DURATION = 3
         private const val MAX_GAP_BETWEEN_EVENTS = 5
         private const val ACCELERATION_LIMIT = 3.0
