@@ -216,11 +216,11 @@ class HomeFragment : Fragment() {
         binding.tripTime.text = tripTime
         binding.liveSpeed.text = "0"
         binding.rpm.text = "0"
-        binding.speed.text = "83" //speedRate.toInt().toString()
-        binding.acceleration.text = "87" //accelerationRate.toInt().toString()
+        binding.speed.text = "100" //speedRate.toInt().toString()
+        binding.acceleration.text = "90" //accelerationRate.toInt().toString()
 
         val breakRateInt =  breakRate.toInt().coerceIn(0, 99)
-        binding.breaking.text = "84" //breakRateInt.toString()
+        binding.breaking.text = "95" //breakRateInt.toString()
 
         setRateBackground(binding.speed, speedRate)
         setRateBackground(binding.acceleration, accelerationRate)

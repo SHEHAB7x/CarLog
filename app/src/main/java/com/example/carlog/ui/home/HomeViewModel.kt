@@ -139,7 +139,7 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
                 try {
-                    val randomSpeed = (0..80).random()
+                    val randomSpeed = (70..80).random()
                     val speedState = ResponseState.Success(randomSpeed)
                     _liveSpeed.postValue(speedState)
                     _speedValues.add(SpeedValue((System.currentTimeMillis() - startTime) / 1000, randomSpeed))
