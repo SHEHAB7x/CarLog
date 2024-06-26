@@ -214,7 +214,8 @@ class HomeFragment : Fragment() {
         val tripTime = calculateTime((endTimeMillis - startTimeMillis) / 1000)
 
         binding.tripTime.text = tripTime
-
+        binding.liveSpeed.text = "0"
+        binding.rpm.text = "0"
         binding.speed.text = "83" //speedRate.toInt().toString()
         binding.acceleration.text = "87" //accelerationRate.toInt().toString()
 
