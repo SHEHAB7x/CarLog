@@ -49,6 +49,9 @@ class ProfileFragment : Fragment() {
             }, 2000)
 
         }
+        binding.btnTerms.setOnClickListener{
+            Navigation.findNavController(it).navigate(R.id.action_profileFragment_to_termsFragment)
+        }
     }
 
     override fun onDestroy() {

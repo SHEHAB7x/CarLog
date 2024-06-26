@@ -1,6 +1,7 @@
 package com.example.carlog.network
 
 import com.example.carlog.data.ModelAllTrips
+import com.example.carlog.data.ModelMessages
 import com.example.carlog.data.ModelUser
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -15,6 +16,9 @@ interface RetrofitService {
 
     @GET("Trip")
     suspend fun getAllTrips() : ModelAllTrips
+
+    @GET("Message/driver")
+    suspend fun getAllMessages() : ModelMessages
 }
 
 data class LoginRequestBody(

@@ -83,6 +83,9 @@
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_termsFragment"
+            app:destination="@id/termsFragment3" />
     </fragment>
     <fragment
         android:id="@+id/chatsFragment"
@@ -101,4 +104,9 @@
         android:name="com.example.carlog.ui.history.HistoryFragment"
         android:label="fragment_history"
         tools:layout="@layout/fragment_history" />
+    <fragment
+        android:id="@+id/termsFragment3"
+        android:name="com.example.carlog.ui.terms.TermsFragment"
+        android:label="fragment_terms"
+        tools:layout="@layout/fragment_terms" />
 </navigation>

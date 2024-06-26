@@ -2,7 +2,7 @@ package com.example.carlog.data
 
 data class ModelAllTrips(
     val getList: List<ModelAllTripsItem>,
-    val statuscode: Statuscode
+    val statuscode: StatusCode
 )
 
 data class ModelAllTripsItem(

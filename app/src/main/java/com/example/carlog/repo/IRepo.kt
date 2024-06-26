@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import com.example.carlog.data.ModelAllTrips
+import com.example.carlog.data.ModelMessages
 import com.example.carlog.data.ModelUser
 import com.example.carlog.network.ResponseState
 
@@ -28,4 +29,5 @@ interface IRepo {
     ): ResponseState<Int>
 
     suspend fun getAllTrips(): ResponseState<ModelAllTrips>?
+    suspend fun getAllMessages() : ResponseState<ModelMessages>
 }
