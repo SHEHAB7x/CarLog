@@ -23,12 +23,14 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
     private val _liveRPM = MutableLiveData<ResponseState<Int>>()
     val liveRPM: LiveData<ResponseState<Int>> get() = _liveRPM
     private val _speedValues = mutableListOf<SpeedValue>()
+    private val _rpmValues = mutableListOf<Int>()
 
     private val _postTripLiveData = MutableLiveData<ResponseState<Int>>()
     val postTripLiveData: LiveData<ResponseState<Int>> get() = _postTripLiveData
 
     val speedValues: List<SpeedValue> get() = _speedValues.toList()
 
+    val rpmValues: List<Int> get() = _rpmValues.toList()
     data class SpeedValue(var time: Long?, var speed: Int)
 
     private val rating: Rating = Rating()
@@ -61,7 +63,14 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
 
                     delay(1000)
 
-                    _liveRPM.postValue(repo.getRPM(bluetoothSocket))
+                    val rpmValue =  repo.getRPM(bluetoothSocket)
+                    _liveRPM.postValue(rpmValue)
+
+                    if (rpmValue is ResponseState.Success) {
+                        _rpmValues.add(
+                            rpmValue.data
+                        )
+                    }
                 } catch (e: Exception) {
                     _liveRPM.postValue((e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") }))
                     _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("Speed Exception: $it") })
@@ -127,45 +136,8 @@ class HomeViewModel @Inject constructor(private val repo: Repo) : ViewModel() {
         return idlingTime
     }
 
-    fun getAllMax(){
-        val maxSpeed = speedValues.maxByOrNull { it.speed }?.speed
-
+    fun getRpmRate() : Int{
+        return rating.calculateAveragePercentage(rpmValues)
     }
 
-
-    fun getSpeed(bluetoothSocket: BluetoothSocket) {
-        val startTime = System.currentTimeMillis()
-        viewModelScope.launch(Dispatchers.IO) {
-            while (isActive) {
-                try {
-                    val speedState = repo.getSpeed(bluetoothSocket)
-                    _liveSpeed.postValue(speedState)
-                    if (speedState is ResponseState.Success) {
-                        _speedValues.add(
-                            SpeedValue(
-                                ((System.currentTimeMillis() - startTime) / 1000),
-                                speedState.data
-                            )
-                        )
-                    }
-                    delay(1000)
-                } catch (e: Exception) {
-                    _liveSpeed.postValue(e.localizedMessage?.let { ResponseState.Error("Speed Exception: $it") })
-                }
-            }
-        }
-    }
-
-    fun getRPM(bluetoothSocket: BluetoothSocket) {
-        viewModelScope.launch {
-            while (isActive) {
-                try {
-                    _liveRPM.postValue(repo.getRPM(bluetoothSocket))
-                    delay(2000)
-                } catch (e: Exception) {
-                    _liveRPM.postValue((e.localizedMessage?.let { ResponseState.Error("RPM Exception: $it") }))
-                }
-            }
-        }
-    }
 }

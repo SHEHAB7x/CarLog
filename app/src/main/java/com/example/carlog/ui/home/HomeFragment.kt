@@ -155,6 +155,7 @@ class HomeFragment : Fragment() {
 
     private fun getRate() {
         val speedRate = viewModel.getSpeedRate()
+        val rpmRate = viewModel.getRpmRate()
         val accelerationRate = viewModel.getAccelerationRate()
         val breakRate = viewModel.getBreakingRate()
 
@@ -184,7 +185,7 @@ class HomeFragment : Fragment() {
             maxDec!!.toInt(),
             maxIdling
         )
-        setRate(speedRate, accelerationRate.rate, breakRate.rate)
+        setRate(rpmRate,speedRate, accelerationRate.rate, breakRate.rate)
     }
 
     private fun getOverSpeedTimes(): Int {
@@ -219,6 +220,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setRate(
+        rpmRate : Int,
         speedRate: Double,
         accelerationRate: Double,
         breakRate: Double
@@ -232,6 +234,7 @@ class HomeFragment : Fragment() {
 
         binding.speed.text = speedRate.toInt().toString()
         binding.acceleration.text = accelerationRate.toInt().toString()
+        binding.rpm.text = rpmRate.toString()
 
         var breakRateInt = breakRate.toInt().coerceIn(0, 99)
         binding.breaking.text = breakRateInt.toString()

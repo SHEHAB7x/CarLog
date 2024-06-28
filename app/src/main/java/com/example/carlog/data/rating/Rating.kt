@@ -3,10 +3,12 @@ package com.example.carlog.data.rating
 import com.example.carlog.data.ModelAcceleration
 import com.example.carlog.ui.home.HomeViewModel
 import kotlin.math.max
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class Rating {
     companion object {
-        const val SPEED_LIMIT = 20
+        const val SPEED_LIMIT = 80
         private const val MIN_EVENT_DURATION = 3
         private const val MAX_GAP_BETWEEN_EVENTS = 5
         private const val ACCELERATION_LIMIT = 3.0
@@ -15,6 +17,8 @@ class Rating {
 
     data class Event(var startIndex: Int, var endIndex: Int, var maxSpeed: Int, var duration: Int)
     data class Acceleration(var acceleration: Double, var speed: Int)
+    data class Acceleration2(val acceleration: Double)
+
 
     private var inEvent = false
     private var currentEventStartIndex = 0
@@ -124,5 +128,52 @@ class Rating {
             if (rate < limit) ((limit - rate) / limit) * 100 else 0.0
         }
         return result
+    }
+
+
+    fun calculateMean(values: List<Acceleration2>?): Double {
+        if (values.isNullOrEmpty()) {
+            return 0.0 // or handle as per your application's requirements
+        }
+
+        val sum = values.sumByDouble { it.acceleration }
+        return sum / values.size
+    }
+
+    fun calculateStandardDeviation(values: List<Acceleration2>?, mean: Double): Double {
+        if (values.isNullOrEmpty()) {
+            return 0.0 // or handle as per your application's requirements
+        }
+
+        val sum = values.sumByDouble { (it.acceleration - mean).pow(2) }
+        val variance = sum / (values.size - 1)
+        return sqrt(variance)
+    }
+
+    fun calculateStandardDeviationPercentage(values: List<Acceleration2>?): Double {
+        val mean = calculateMean(values)
+        val stdDeviation = calculateStandardDeviation(values, mean)
+
+        if (mean == 0.0) {
+            return 0.0 // Or handle this case according to your application's logic
+        }
+
+        return (stdDeviation / mean) * 100
+    }
+
+
+    private fun calculatePercentage(newVal: Int): Int {
+        val percentage = (newVal - 3000) / 3000.0 * 100
+        return if (percentage > 100) 100 else percentage.toInt()
+    }
+
+    // Function to calculate the average percentage
+    fun calculateAveragePercentage(data: List<Int>): Int {
+        // Calculate percentages for the given pairs
+        val percentage1 = calculatePercentage(data[2])
+        val percentage2 = calculatePercentage(data[3])
+
+        // Calculate the average percentage
+        return (percentage1 + percentage2) / 2
     }
 }
