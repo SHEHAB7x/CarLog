@@ -102,8 +102,6 @@ I was responsible for the complete Android application development:
 
 ## 📸 Screenshots
 
-> Add screenshots here
-
 | Login | Home | OBD Connection |
 |------|------|------|
 | 📷 | 📷 | 📷 |
