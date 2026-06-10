@@ -118,6 +118,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+
     private fun navigateTo(actionId: Int) {
         findNavController().navigate(actionId)
     }

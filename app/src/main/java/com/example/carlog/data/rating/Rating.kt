@@ -167,13 +167,10 @@ class Rating {
         return if (percentage > 100) 100 else percentage.toInt()
     }
 
-    // Function to calculate the average percentage
     fun calculateAveragePercentage(data: List<Int>): Int {
-        // Calculate percentages for the given pairs
         val percentage1 = calculatePercentage(data[2])
         val percentage2 = calculatePercentage(data[3])
 
-        // Calculate the average percentage
         return (percentage1 + percentage2) / 2
     }
 }
